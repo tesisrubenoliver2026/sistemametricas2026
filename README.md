@@ -8,8 +8,9 @@ Sistema de gestión comercial con módulos de ventas, compras, RRHH, contabilida
 
 ```
 sistemametricas2026/
-├── cliente/        # Frontend — Electron + React + Vite + TypeScript
-├── server/         # Backend  — Node.js + Express + MySQL
+├── cliente/        # Frontend escritorio — Electron + React + Vite + TypeScript
+├── mobile/         # App móvil — Expo + React Native + NativeWind
+├── server/         # Backend — Node.js + Express + MySQL
 └── database/
     ├── backup_inicial.sql   # Dump completo de la base de datos
     └── migrations/          # Scripts SQL de cambios incrementales
@@ -142,7 +143,7 @@ El servidor queda escuchando en `http://localhost:3002`.
 
 ---
 
-## 4 — Configurar y levantar el cliente (frontend)
+## 4 — Configurar y levantar el cliente (frontend escritorio)
 
 ```bash
 cd cliente
@@ -173,12 +174,52 @@ El instalador se genera en `cliente/dist/`.
 
 ---
 
-## 5 — Orden de inicio recomendado
+## 5 — Configurar y levantar la app móvil
+
+```bash
+cd mobile
+npm install
+```
+
+### Requisitos adicionales para móvil
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| Expo CLI    | `npm install -g expo-cli` |
+| Android Studio | Para emulador Android o dispositivo físico |
+| Expo Go (app) | Instalar en el celular desde Play Store / App Store |
+
+### Iniciar en modo desarrollo
+
+```bash
+# Levantar el servidor Expo
+npx expo start
+
+# Opciones al iniciar:
+# Presionar 'a' → abre en emulador Android
+# Presionar 'w' → abre en navegador web
+# Escanear QR con Expo Go → abre en celular físico
+```
+
+### Compilar APK para Android
+
+```bash
+npx expo run:android
+# o para generar APK con EAS Build:
+npx eas build --platform android
+```
+
+> La app móvil se conecta al mismo backend (`server/`). Verificar que la IP configurada en `mobile/lib/axiosConfig.ts` apunte al servidor correcto (usar la IP local de la PC, no `localhost`, para dispositivos físicos).
+
+---
+
+## 6 — Orden de inicio recomendado
 
 1. Iniciar **MySQL**
 2. Iniciar **Ollama** (`ollama serve` si no inicia automáticamente)
 3. Iniciar el **servidor**: `cd server && npm start`
-4. Iniciar el **cliente**: `cd cliente && npm run electron:dev`
+4. Iniciar el **cliente escritorio**: `cd cliente && npm run electron:dev`
+5. Iniciar la **app móvil**: `cd mobile && npx expo start`
 
 ---
 
@@ -202,6 +243,7 @@ El instalador se genera en `cliente/dist/`.
 
 ## Tecnologías
 
-**Cliente:** React 19, TypeScript, Vite, Electron, Tailwind CSS, Zustand, React Router, Axios  
+**Cliente escritorio:** React 19, TypeScript, Vite, Electron, Tailwind CSS, Zustand, React Router, Axios  
+**App móvil:** Expo, React Native, NativeWind, Expo Router, Zustand, Axios  
 **Servidor:** Node.js, Express 5, MySQL2, JWT, Nodemailer, node-cron, jsreport  
 **IA:** Ollama con modelo llama3.2 (local, sin internet)
