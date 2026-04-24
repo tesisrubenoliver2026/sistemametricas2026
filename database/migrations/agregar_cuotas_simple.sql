@@ -5,7 +5,7 @@
 -- El usuario solo ingresa: cant_cuota y tasa_interes_anual
 -- El sistema calcula todo automáticamente
 
-USE sistema_ale_2;
+USE sistematesis2026;
 
 -- Agregar columnas a deuda_venta
 ALTER TABLE deuda_venta

@@ -36,27 +36,27 @@ sistemametricas2026/
 mysql -u root -p
 
 # Dentro de MySQL
-CREATE DATABASE sistema_ale_2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE sistematesis2026 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 EXIT;
 
 # Importar el dump completo
-mysql -u root -p sistema_ale_2 < database/backup_inicial.sql
+mysql -u root -p sistematesis2026 < database/backup_inicial.sql
 ```
 
 ### 1.2 Aplicar migraciones (en orden cronológico)
 
 ```bash
-mysql -u root -p sistema_ale_2 < database/migrations/20251214_add_idlote_to_detalle_venta.sql
-mysql -u root -p sistema_ale_2 < database/migrations/20251215_add_caja_fields_to_lotes_producto.sql
-mysql -u root -p sistema_ale_2 < database/migrations/20251216_create_producto_detalle.sql
-mysql -u root -p sistema_ale_2 < database/migrations/plan_cuentas_inicial.sql
-mysql -u root -p sistema_ale_2 < database/migrations/agregar_cuotas_simple.sql
-mysql -u root -p sistema_ale_2 < database/migrations/add_idfuncionario_columns.sql
-mysql -u root -p sistema_ale_2 < database/migrations/add_idusuarios_to_configuracion.sql
-mysql -u root -p sistema_ale_2 < database/migrations/add_tienda_columns_to_configuracion.sql
-mysql -u root -p sistema_ale_2 < database/migrations/fix_tienda_column_to_boolean.sql
-mysql -u root -p sistema_ale_2 < database/migrations/fix_unique_key_configuracion.sql
-mysql -u root -p sistema_ale_2 < database/migrations/corregir_saldos_cuotas.sql
+mysql -u root -p sistematesis2026 < database/migrations/20251214_add_idlote_to_detalle_venta.sql
+mysql -u root -p sistematesis2026 < database/migrations/20251215_add_caja_fields_to_lotes_producto.sql
+mysql -u root -p sistematesis2026 < database/migrations/20251216_create_producto_detalle.sql
+mysql -u root -p sistematesis2026 < database/migrations/plan_cuentas_inicial.sql
+mysql -u root -p sistematesis2026 < database/migrations/agregar_cuotas_simple.sql
+mysql -u root -p sistematesis2026 < database/migrations/add_idfuncionario_columns.sql
+mysql -u root -p sistematesis2026 < database/migrations/add_idusuarios_to_configuracion.sql
+mysql -u root -p sistematesis2026 < database/migrations/add_tienda_columns_to_configuracion.sql
+mysql -u root -p sistematesis2026 < database/migrations/fix_tienda_column_to_boolean.sql
+mysql -u root -p sistematesis2026 < database/migrations/fix_unique_key_configuracion.sql
+mysql -u root -p sistematesis2026 < database/migrations/corregir_saldos_cuotas.sql
 ```
 
 > Si el backup ya incluye los cambios de las migraciones, omitir este paso.
@@ -122,7 +122,7 @@ HOST=127.0.0.1
 PORT=3002
 DB_USER=root
 DB_PASSWORD=tu_password_mysql
-DB_NAME=sistema_ale_2
+DB_NAME=sistematesis2026
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
 ```
