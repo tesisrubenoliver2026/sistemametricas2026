@@ -1,0 +1,176 @@
+import db from '../db.js';
+
+const Funcionario = {
+  // Crear un nuevo funcionario
+  create: (data, callback) => {
+    const query = `
+      INSERT INTO funcionarios (
+        idusuarios, nombre, apellido, telefono, tipo_funcionario,
+        login, password, estado, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+    `;
+    const values = [
+      data.idusuarios,
+      data.nombre,
+      data.apellido,
+      data.telefono || null,
+      data.tipo_funcionario,
+      data.login,
+      data.password,
+      data.estado || 'activo'
+    ];
+    db.query(query, values, callback);
+  },
+
+  // Obtener todos los funcionarios (paginado y filtrado)
+  findAllPaginatedFiltered: (limit, offset, search, callback) => {
+    const searchTerm = `%${search}%`;
+    const query = `
+      SELECT
+        f.*,
+        u.login as usuario_login
+      FROM funcionarios f
+      LEFT JOIN usuarios u ON f.idusuarios = u.idusuarios
+      WHERE f.deleted_at IS NULL
+        AND (
+          f.nombre LIKE ? OR
+          f.apellido LIKE ? OR
+          f.telefono LIKE ? OR
+          f.login LIKE ? OR
+          f.tipo_funcionario LIKE ?
+        )
+      ORDER BY f.idfuncionario DESC
+      LIMIT ? OFFSET ?
+    `;
+    db.query(query, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, limit, offset], callback);
+  },
+
+  // Contar funcionarios con filtro
+  countFiltered: (search, callback) => {
+    const searchTerm = `%${search}%`;
+    const query = `
+      SELECT COUNT(*) as total
+      FROM funcionarios f
+      WHERE f.deleted_at IS NULL
+        AND (
+          f.nombre LIKE ? OR
+          f.apellido LIKE ? OR
+          f.telefono LIKE ? OR
+          f.login LIKE ? OR
+          f.tipo_funcionario LIKE ?
+        )
+    `;
+    db.query(query, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0].total);
+    });
+  },
+
+  // Buscar funcionario por ID
+  findById: (id, callback) => {
+    const query = `
+      SELECT
+        f.*,
+        u.login as usuario_login
+      FROM funcionarios f
+      LEFT JOIN usuarios u ON f.idusuarios = u.idusuarios
+      WHERE f.idfuncionario = ? AND f.deleted_at IS NULL
+    `;
+    db.query(query, [id], callback);
+  },
+
+  // Buscar funcionario por login
+  findByLogin: (login, callback) => {
+    const query = `
+      SELECT * FROM funcionarios
+      WHERE login = ? AND deleted_at IS NULL
+    `;
+    db.query(query, [login], callback);
+  },
+
+  // Actualizar funcionario
+  update: (id, data, callback) => {
+    const query = `
+      UPDATE funcionarios
+      SET
+        nombre = ?,
+        apellido = ?,
+        telefono = ?,
+        tipo_funcionario = ?,
+        login = ?,
+        estado = ?,
+        updated_at = NOW()
+      WHERE idfuncionario = ?
+    `;
+    const values = [
+      data.nombre,
+      data.apellido,
+      data.telefono || null,
+      data.tipo_funcionario,
+      data.login,
+      data.estado,
+      id
+    ];
+    db.query(query, values, callback);
+  },
+
+  // Actualizar contraseña
+  updatePassword: (id, newPassword, callback) => {
+    const query = `
+      UPDATE funcionarios
+      SET password = ?, updated_at = NOW()
+      WHERE idfuncionario = ?
+    `;
+    db.query(query, [newPassword, id], callback);
+  },
+
+  // Soft delete
+  softDelete: (id, callback) => {
+    const query = `
+      UPDATE funcionarios
+      SET deleted_at = NOW(), updated_at = NOW()
+      WHERE idfuncionario = ?
+    `;
+    db.query(query, [id], callback);
+  },
+
+  // Obtener todos los funcionarios (sin paginación) - para selects
+  findAll: (callback) => {
+    const query = `
+      SELECT
+        idfuncionario,
+        nombre,
+        apellido,
+        telefono,
+        tipo_funcionario,
+        login,
+        estado
+      FROM funcionarios
+      WHERE deleted_at IS NULL
+      ORDER BY nombre ASC
+    `;
+    db.query(query, callback);
+  },
+
+  // Obtener funcionarios por usuario
+  findByUsuario: (idusuarios, callback) => {
+    const query = `
+      SELECT * FROM funcionarios
+      WHERE idusuarios = ? AND deleted_at IS NULL
+      ORDER BY created_at DESC
+    `;
+    db.query(query, [idusuarios], callback);
+  },
+
+  // Cambiar estado
+  changeStatus: (id, estado, callback) => {
+    const query = `
+      UPDATE funcionarios
+      SET estado = ?, updated_at = NOW()
+      WHERE idfuncionario = ?
+    `;
+    db.query(query, [estado, id], callback);
+  }
+};
+
+export default Funcionario;

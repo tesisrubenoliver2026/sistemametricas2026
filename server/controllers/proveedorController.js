@@ -1,0 +1,410 @@
+import Proveedor from '../models/Proveedor.js';
+import Funcionario from '../models/Funcionario.js';
+import Facturador from '../models/facturadorModel.js';
+import { generateReportListProvider } from '../report/reportListProvider.js';
+import { getUserId } from '../utils/getUserId.js';
+
+export const getAllProveedores = (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || '';
+
+  Proveedor.countFiltered(search, (err, total) => {
+    if (err) return res.status(500).json({ error: err });
+
+    Proveedor.findAllPaginatedFiltered(limit, offset, search, (err, data) => {
+      if (err) return res.status(500).json({ error: err });
+
+      const totalPages = Math.ceil(total / limit);
+      res.json({
+        data,
+        totalItems: total,
+        totalPages,
+        currentPage: page,
+      });
+    });
+  });
+};
+
+export const getProveedoresByUser = (req, res) => {
+  // Validar usuario autenticado
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const { tipo } = req.user || {};
+
+  if (!idusuarios && !idfuncionario) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuario no autenticado'
+    });
+  }
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || '';
+
+  // Función helper que ejecuta la búsqueda con los IDs apropiados
+  function buscarProveedores(idsusuarios, idfuncionariosIds) {
+    Proveedor.countFilteredByUserV2(idsusuarios, idfuncionariosIds, search, (err, total) => {
+      if (err) return res.status(500).json({ error: err });
+
+      Proveedor.findAllPaginatedFilteredByUserV2(idsusuarios, idfuncionariosIds, limit, offset, search, (err, data) => {
+        if (err) return res.status(500).json({ error: err });
+
+        const totalPages = Math.ceil(total / limit);
+        res.json({
+          data,
+          totalItems: total,
+          totalPages,
+          currentPage: page,
+        });
+      });
+    });
+  }
+
+  // Lógica condicional según el tipo de usuario
+  if (tipo === 'funcionario') {
+    // Funcionario: solo ver sus propios proveedores
+    buscarProveedores(null, idfuncionario);
+  } else {
+    // Usuario administrador: ver sus proveedores + los de sus funcionarios
+    Funcionario.findByUsuario(idusuarios, (err, funcionarios) => {
+      if (err) return res.status(500).json({ error: err });
+
+      const funcionariosIds = funcionarios.length > 0
+        ? funcionarios.map(f => f.idfuncionario).join(',')
+        : null;
+
+      buscarProveedores(idusuarios, funcionariosIds);
+    });
+  }
+};
+
+
+export const getProveedorById = (req, res) => {
+  const id = req.params.id;
+  Proveedor.findById(id, (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results[0]);
+  });
+};
+
+export const createProveedor = (req, res) => {
+  // Validar usuario autenticado
+  const { idusuarios, idfuncionario } = getUserId(req);
+  if (!idusuarios && !idfuncionario) {
+    return res.status(401).json({
+      success: false,
+      error: 'Usuario no autenticado'
+    });
+  }
+
+  const { nombre, telefono, direccion, ruc, razon, estado } = req.body;
+
+  if (!nombre || !telefono || !direccion || !ruc || !razon) {
+    return res.status(400).json({
+      success: false,
+      error: 'Todos los campos son obligatorios. Verifique e intente nuevamente.',
+    });
+  }
+
+  // Agregar idusuario e idfuncionario a los datos
+  const data = { ...req.body, idusuario: idusuarios, idfuncionario };
+
+  Proveedor.create(data, (err, result) => {
+    if (err) {
+      console.error('Error al crear proveedor:', err);
+
+      if (err.code === 'ER_DUP_ENTRY') {
+        let errorMsg = 'Ya tienes un proveedor con estos datos.';
+        if (err.message.includes('unique_nombre_usuario')) {
+          errorMsg = 'Ya tienes un proveedor registrado con este nombre.';
+        } else if (err.message.includes('unique_ruc_usuario')) {
+          errorMsg = 'Ya tienes un proveedor registrado con este RUC.';
+        }
+
+        return res.status(400).json({
+          success: false,
+          error: errorMsg
+        });
+      }
+
+      if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+        return res.status(400).json({
+          success: false,
+          error: 'Usuario no válido'
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: 'Error al crear proveedor'
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Proveedor creado con éxito',
+      id: result.insertId
+    });
+  });
+};
+
+export const updateProveedor = (req, res) => {
+  const id = req.params.id;
+  Proveedor.update(id, req.body, (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Proveedor actualizado' });
+  });
+};
+
+export const deleteProveedor = (req, res) => {
+  const id = req.params.id;
+  Proveedor.delete(id, (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Proveedor eliminado (soft delete)' });
+  });
+};
+
+// ✅ Obtener datos para el reporte de proveedores (sin generar PDF)
+export const getReporteProveedoresData = (req, res) => {
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const userId = idfuncionario || idusuarios;
+  const search = req.query.search || '';
+
+  // Validar usuario autenticado
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuario no autenticado'
+    });
+  }
+
+  // Obtener proveedores del usuario con estadísticas de compras
+  Proveedor.findAllByUserForReportWithPurchases(userId, search, (err, proveedores) => {
+    if (err) {
+      console.error('❌ Error al obtener proveedores:', err);
+      return res.status(500).json({
+        error: 'Error interno al obtener proveedores'
+      });
+    }
+
+    if (!proveedores.length) {
+      return res.status(404).json({
+        error: '⚠️ No se encontraron proveedores para generar el reporte'
+      });
+    }
+
+    // Función helper para formatear fechas
+    const formatDate = (date) => {
+      if (!date) return '';
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
+    // Función helper para formatear números con puntos de miles
+    const formatNumber = (num) => {
+      if (!num && num !== 0) return '0';
+      return new Intl.NumberFormat('es-PY').format(Math.round(num));
+    };
+
+    // Calcular estadísticas generales
+    let totalProveedores = proveedores.length;
+    let proveedoresActivos = 0;
+    let proveedoresInactivos = 0;
+    let totalComprasGeneral = 0;
+    let montoTotalComprado = 0;
+
+    proveedores.forEach((proveedor) => {
+      // Contar activos e inactivos
+      if (proveedor.estado === 'activo') {
+        proveedoresActivos++;
+      } else {
+        proveedoresInactivos++;
+      }
+
+      // Sumar compras
+      totalComprasGeneral += parseInt(proveedor.total_compras) || 0;
+      montoTotalComprado += parseFloat(proveedor.monto_total_comprado) || 0;
+    });
+
+    // Formatear proveedores con todos los datos necesarios incluidas estadísticas de compras
+    const proveedoresFormateados = proveedores.map((proveedor) => {
+      return {
+        idproveedor: proveedor.idproveedor,
+        nombre: proveedor.nombre,
+        telefono: proveedor.telefono || 'Sin teléfono',
+        direccion: proveedor.direccion || 'Sin dirección',
+        ruc: proveedor.ruc,
+        razon: proveedor.razon,
+        estado: proveedor.estado,
+        created_at: formatDate(proveedor.created_at),
+        updated_at: formatDate(proveedor.updated_at),
+        deleted_at: formatDate(proveedor.deleted_at),
+        idusuario: proveedor.idusuario,
+        // Datos de compras
+        total_compras: parseInt(proveedor.total_compras) || 0,
+        monto_total_comprado: formatNumber(parseFloat(proveedor.monto_total_comprado) || 0),
+        monto_total_comprado_raw: parseFloat(proveedor.monto_total_comprado) || 0,
+        ultima_compra: formatDate(proveedor.ultima_compra) || 'Sin compras'
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: proveedoresFormateados,
+      estadisticas: {
+        total_proveedores: totalProveedores,
+        proveedores_activos: proveedoresActivos,
+        proveedores_inactivos: proveedoresInactivos,
+        total_compras_general: totalComprasGeneral,
+        monto_total_comprado: formatNumber(montoTotalComprado),
+        monto_total_comprado_raw: montoTotalComprado
+      }
+    });
+  });
+};
+
+// ✅ Generar PDF del reporte de proveedores
+export const generateReporteProveedoresPDF = (req, res) => {
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const userId = idfuncionario || idusuarios;
+  const search = req.query.search || '';
+
+  // Validar usuario autenticado
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuario no autenticado'
+    });
+  }
+
+  // Obtener proveedores del usuario con estadísticas de compras
+  Proveedor.findAllByUserForReportWithPurchases(userId, search, (err, proveedores) => {
+    if (err) {
+      console.error('❌ Error al obtener proveedores:', err);
+      return res.status(500).json({
+        error: 'Error interno al obtener proveedores'
+      });
+    }
+
+    if (!proveedores.length) {
+      return res.status(404).json({
+        error: '⚠️ No se encontraron proveedores para generar el reporte'
+      });
+    }
+
+    // Obtener datos del facturador activo
+    Facturador.findActivo((errFact, factResult) => {
+      if (errFact || !factResult.length) {
+        return res.status(400).json({
+          error: '⚠️ No se encontró facturador activo'
+        });
+      }
+
+      const facturador = factResult[0];
+
+      // Calcular totales
+      let totalProveedores = proveedores.length;
+      let proveedoresActivos = 0;
+      let proveedoresInactivos = 0;
+      let totalComprasGeneral = 0;
+      let montoTotalComprado = 0;
+
+      proveedores.forEach((proveedor) => {
+        // Contar activos e inactivos
+        if (proveedor.estado === 'activo') {
+          proveedoresActivos++;
+        } else {
+          proveedoresInactivos++;
+        }
+
+        // Sumar compras
+        totalComprasGeneral += parseInt(proveedor.total_compras) || 0;
+        montoTotalComprado += parseFloat(proveedor.monto_total_comprado) || 0;
+      });
+
+      // Función helper para formatear fechas
+      const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+
+      // Función helper para formatear números con puntos de miles
+      const formatNumber = (num) => {
+        if (!num && num !== 0) return '0';
+        return new Intl.NumberFormat('es-PY').format(Math.round(num));
+      };
+
+      const fecha_emision = formatDate(new Date());
+
+      // Formatear proveedores con todos los datos necesarios incluidas estadísticas de compras
+      const proveedoresFormateados = proveedores.map((proveedor) => {
+        return {
+          idproveedor: proveedor.idproveedor,
+          nombre: proveedor.nombre,
+          telefono: proveedor.telefono || 'Sin teléfono',
+          direccion: proveedor.direccion || 'Sin dirección',
+          ruc: proveedor.ruc,
+          razon: proveedor.razon,
+          estado: proveedor.estado,
+          created_at: formatDate(proveedor.created_at),
+          updated_at: formatDate(proveedor.updated_at),
+          deleted_at: formatDate(proveedor.deleted_at),
+          idusuario: proveedor.idusuario,
+          // Datos de compras
+          total_compras: parseInt(proveedor.total_compras) || 0,
+          monto_total_comprado: formatNumber(parseFloat(proveedor.monto_total_comprado) || 0),
+          monto_total_comprado_raw: parseFloat(proveedor.monto_total_comprado) || 0,
+          ultima_compra: formatDate(proveedor.ultima_compra) || 'Sin compras'
+        };
+      });
+
+      // Estructura de datos para el reporte
+      const datosReporte = {
+        empresa: {
+          nombre_fantasia: facturador.nombre_fantasia,
+          ruc: facturador.ruc,
+          timbrado_nro: facturador.timbrado_nro,
+          fecha_inicio_vigente: formatDate(facturador.fecha_inicio_vigente),
+          fecha_fin_vigente: formatDate(facturador.fecha_fin_vigente),
+          fecha_emision
+        },
+        reporte: {
+          titulo: 'Reporte de Proveedores',
+          total_proveedores: totalProveedores,
+          proveedores_activos: proveedoresActivos,
+          proveedores_inactivos: proveedoresInactivos,
+          total_compras_general: totalComprasGeneral,
+          monto_total_comprado: formatNumber(montoTotalComprado),
+          proveedores: proveedoresFormateados
+        }
+      };
+
+      console.log('📊 Generando reporte de proveedores');
+
+      // Generar el PDF
+      generateReportListProvider(datosReporte)
+        .then((reportePDFBase64) => {
+          res.status(200).json({
+            message: '✅ Reporte de proveedores generado correctamente',
+            reportePDFBase64,
+            datosReporte
+          });
+        })
+        .catch((error) => {
+          console.error('❌ Error al generar el reporte PDF:', error);
+          res.status(500).json({
+            error: '❌ Error al generar el reporte PDF',
+            details: error.message
+          });
+        });
+    });
+  });
+};

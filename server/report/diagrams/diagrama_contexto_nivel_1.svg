@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860">
+  <defs>
+    <style>
+      .lane { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 18; }
+      .laneTitle { font: 800 18px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+
+      .box { fill: #ffffff; stroke: #0f172a; stroke-width: 2; rx: 14; }
+      .boxAccent { fill: #0ea5e9; stroke: #075985; stroke-width: 2; rx: 14; }
+      .boxAccent2 { fill: #22c55e; stroke: #14532d; stroke-width: 2; rx: 14; }
+
+      .boxText { font: 700 16px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .boxTextInv { font: 700 16px "Segoe UI", Arial, sans-serif; fill: #ffffff; }
+      .note { font: 600 13px "Segoe UI", Arial, sans-serif; fill: #334155; }
+
+      .callout { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 10; }
+      .line { stroke: #0f172a; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.95; }
+    </style>
+  </defs>
+
+  <!-- Lanes -->
+  <rect class="lane" x="40" y="40" width="1120" height="190" />
+  <text x="70" y="75" class="laneTitle">Interfaces y actores</text>
+
+  <rect class="lane" x="40" y="250" width="1120" height="360" />
+  <text x="70" y="285" class="laneTitle">Backend (API REST)</text>
+
+  <rect class="lane" x="40" y="630" width="1120" height="190" />
+  <text x="70" y="665" class="laneTitle">Servicios de soporte</text>
+
+  <!-- ===================== Interfaces / Actores ===================== -->
+  <rect class="box" x="80" y="105" width="230" height="85" />
+  <text x="195" y="142" class="boxText" text-anchor="middle">
+    <tspan x="195" dy="0">Administrador</tspan>
+    <tspan x="195" dy="20" class="note">(gestión y control)</tspan>
+  </text>
+
+  <rect class="box" x="330" y="105" width="230" height="85" />
+  <text x="445" y="142" class="boxText" text-anchor="middle">
+    <tspan x="445" dy="0">Funcionario</tspan>
+    <tspan x="445" dy="20" class="note">(caja/ventas)</tspan>
+  </text>
+
+  <rect class="box" x="610" y="105" width="230" height="85" />
+  <text x="725" y="142" class="boxText" text-anchor="middle">
+    <tspan x="725" dy="0">Cliente Web</tspan>
+    <tspan x="725" dy="20" class="note">Vite + React + TSX</tspan>
+  </text>
+
+  <rect class="box" x="860" y="105" width="260" height="85" />
+  <text x="990" y="142" class="boxText" text-anchor="middle">
+    <tspan x="990" dy="0">Cliente Móvil</tspan>
+    <tspan x="990" dy="20" class="note">React Native + Expo</tspan>
+  </text>
+
+  <!-- Callout: keep labels away from connectors -->
+  <rect class="callout" x="820" y="205" width="330" height="32" />
+  <text x="985" y="226" class="note" text-anchor="middle">Solicitudes HTTP: login, CRUD, consultas, reportes, métricas</text>
+
+  <!-- ===================== Backend ===================== -->
+  <rect class="boxAccent" x="400" y="320" width="400" height="110" />
+  <text x="600" y="360" class="boxTextInv" text-anchor="middle">
+    <tspan x="600" dy="0">API REST</tspan>
+    <tspan x="600" dy="22">Node.js + Express / JWT / CORS</tspan>
+  </text>
+
+  <!-- Modules (Level 1) -->
+  <rect class="box" x="120" y="350" width="250" height="90" />
+  <text x="245" y="388" class="boxText" text-anchor="middle">
+    <tspan x="245" dy="0">Transacciones</tspan>
+    <tspan x="245" dy="20" class="note">ventas / compras / caja</tspan>
+  </text>
+
+  <rect class="box" x="120" y="470" width="250" height="90" />
+  <text x="245" y="508" class="boxText" text-anchor="middle">
+    <tspan x="245" dy="0">Autenticación</tspan>
+    <tspan x="245" dy="20" class="note">usuarios y permisos</tspan>
+  </text>
+
+  <rect class="box" x="395" y="470" width="250" height="90" />
+  <text x="520" y="508" class="boxText" text-anchor="middle">
+    <tspan x="520" dy="0">Catálogo</tspan>
+    <tspan x="520" dy="20" class="note">productos y categorías</tspan>
+  </text>
+
+  <rect class="box" x="670" y="470" width="250" height="90" />
+  <text x="795" y="508" class="boxText" text-anchor="middle">
+    <tspan x="795" dy="0">Terceros</tspan>
+    <tspan x="795" dy="20" class="note">clientes y proveedores</tspan>
+  </text>
+
+  <rect class="box" x="930" y="350" width="230" height="90" />
+  <text x="1045" y="388" class="boxText" text-anchor="middle">
+    <tspan x="1045" dy="0">Reportes</tspan>
+    <tspan x="1045" dy="20" class="note">PDF y consultas</tspan>
+  </text>
+
+  <rect class="boxAccent2" x="930" y="470" width="230" height="90" />
+  <text x="1045" y="506" class="boxTextInv" text-anchor="middle">
+    <tspan x="1045" dy="0">Métricas IA</tspan>
+    <tspan x="1045" dy="20" style="font-weight:600">snapshot + interpretación</tspan>
+  </text>
+
+  <!-- Lines: interfaces -> API (no arrowheads) -->
+  <path class="line" d="M 195 190 L 195 260 L 430 260 L 430 320" />
+  <path class="line" d="M 445 190 L 445 320" />
+  <path class="line" d="M 725 190 L 725 320" />
+  <path class="line" d="M 990 190 L 990 260 L 770 260 L 770 320" />
+
+  <!-- Lines: API -> modules (spaced routing) -->
+  <path class="line" d="M 600 430 L 600 455" />
+  <path class="line" d="M 600 455 L 245 455 L 245 470" />
+  <path class="line" d="M 600 455 L 520 455 L 520 470" />
+  <path class="line" d="M 600 455 L 795 455 L 795 470" />
+  <path class="line" d="M 600 455 L 1045 455 L 1045 470" />
+  <path class="line" d="M 600 430 L 600 335 L 245 335 L 245 350" />
+  <path class="line" d="M 600 430 L 600 335 L 1045 335 L 1045 350" />
+
+  <!-- ===================== Services ===================== -->
+  <rect class="box" x="110" y="695" width="280" height="95" />
+  <text x="250" y="733" class="boxText" text-anchor="middle">
+    <tspan x="250" dy="0">MySQL</tspan>
+    <tspan x="250" dy="20" class="note">persistencia relacional</tspan>
+  </text>
+
+  <rect class="box" x="420" y="695" width="280" height="95" />
+  <text x="560" y="733" class="boxText" text-anchor="middle">
+    <tspan x="560" dy="0">Ollama</tspan>
+    <tspan x="560" dy="20" class="note">LLM local</tspan>
+  </text>
+
+  <rect class="box" x="730" y="695" width="210" height="95" />
+  <text x="835" y="733" class="boxText" text-anchor="middle">
+    <tspan x="835" dy="0">Reportes</tspan>
+    <tspan x="835" dy="20" class="note">PDF</tspan>
+  </text>
+
+  <rect class="box" x="960" y="695" width="200" height="95" />
+  <text x="1060" y="733" class="boxText" text-anchor="middle">
+    <tspan x="1060" dy="0">SMTP</tspan>
+    <tspan x="1060" dy="20" class="note">correo</tspan>
+  </text>
+
+  <!-- Bus line between backend and services (keeps text away from connectors) -->
+  <path class="line" d="M 120 655 L 1120 655" />
+
+  <rect class="callout" x="310" y="635" width="240" height="28" />
+  <text x="430" y="654" class="note" text-anchor="middle">consultas y transacciones</text>
+
+  <rect class="callout" x="875" y="635" width="260" height="28" />
+  <text x="1005" y="654" class="note" text-anchor="middle">salidas: PDF y notificaciones</text>
+
+  <rect class="callout" x="620" y="605" width="280" height="28" />
+  <text x="760" y="624" class="note" text-anchor="middle">prompt con snapshot → respuesta</text>
+
+  <!-- Lines: modules -> services (to bus, then down) -->
+  <path class="line" d="M 245 560 L 245 655 L 250 655 L 250 695" />
+  <path class="line" d="M 520 560 L 520 655 L 250 655" />
+  <path class="line" d="M 795 560 L 795 655 L 250 655" />
+
+  <path class="line" d="M 1045 440 L 1045 655 L 835 655 L 835 695" />
+  <path class="line" d="M 1045 440 L 1045 655 L 1060 655 L 1060 695" />
+  <path class="line" d="M 1045 560 L 1045 655 L 560 655 L 560 695" />
+
+  <!-- Footer -->
+  <text x="600" y="845" class="note" text-anchor="middle">Figura 2 – Diagrama de contexto. Nivel 1 (elaboración propia).</text>
+</svg>

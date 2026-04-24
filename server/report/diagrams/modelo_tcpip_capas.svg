@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 900 18px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .box { fill: #ffffff; stroke: #0f172a; stroke-width: 2; rx: 16; }
+      .hdr { fill: #111827; stroke: #111827; stroke-width: 2; rx: 16; }
+      .hdrText { font: 900 14px "Segoe UI", Arial, sans-serif; fill: #ffffff; letter-spacing: 0.4px; }
+      .text { font: 700 13px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #334155; }
+      .line { stroke: #0f172a; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+      .chip { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1.5; rx: 10; }
+      .chipText { font: 700 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .footer { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #334155; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="720" />
+  <text class="title" x="60" y="55">Representación gráfica de capas – Modelo TCP/IP (aplicado al sistema)</text>
+
+  <!-- Left stack (layers) -->
+  <g transform="translate(80,110)">
+    <rect class="box" x="0" y="0" width="300" height="470" rx="18" />
+    <rect class="hdr" x="0" y="0" width="300" height="34" rx="18" />
+    <text class="hdrText" x="150" y="22" text-anchor="middle">CAPAS TCP/IP</text>
+
+    <!-- Application -->
+    <rect class="box" x="30" y="70" width="240" height="80" rx="16" />
+    <text class="text" x="150" y="102" text-anchor="middle">Aplicación</text>
+    <text class="sub" x="150" y="122" text-anchor="middle">HTTP/HTTPS · JSON · SMTP</text>
+
+    <!-- Transport -->
+    <rect class="box" x="30" y="165" width="240" height="80" rx="16" />
+    <text class="text" x="150" y="197" text-anchor="middle">Transporte</text>
+    <text class="sub" x="150" y="217" text-anchor="middle">TCP (confiabilidad)</text>
+
+    <!-- Internet -->
+    <rect class="box" x="30" y="260" width="240" height="80" rx="16" />
+    <text class="text" x="150" y="292" text-anchor="middle">Internet</text>
+    <text class="sub" x="150" y="312" text-anchor="middle">IP · Enrutamiento</text>
+
+    <!-- Network Access -->
+    <rect class="box" x="30" y="355" width="240" height="90" rx="16" />
+    <text class="text" x="150" y="387" text-anchor="middle">Acceso a la red</text>
+    <text class="sub" x="150" y="407" text-anchor="middle">Ethernet · Wi‑Fi · 4G</text>
+    <text class="sub" x="150" y="425" text-anchor="middle">Switch · Router</text>
+
+    <!-- Vertical arrows (top-down encapsulation idea) -->
+    <path class="line" marker-end="url(#arrow)" d="M 150 150 L 150 165" />
+    <path class="line" marker-end="url(#arrow)" d="M 150 245 L 150 260" />
+    <path class="line" marker-end="url(#arrow)" d="M 150 340 L 150 355" />
+  </g>
+
+  <!-- Right: mapping to your system -->
+  <g transform="translate(430,110)">
+    <rect class="box" x="0" y="0" width="690" height="470" rx="18" />
+    <rect class="hdr" x="0" y="0" width="690" height="34" rx="18" />
+    <text class="hdrText" x="345" y="22" text-anchor="middle">EJEMPLO EN EL PROYECTO</text>
+
+    <!-- Application mapping -->
+    <rect class="box" x="30" y="70" width="630" height="80" rx="16" />
+    <text class="text" x="345" y="102" text-anchor="middle">Cliente Web/Móvil ↔ API</text>
+    <text class="sub" x="345" y="122" text-anchor="middle">Requests HTTPS a `/api/*` y `/api/voice/*` (JSON)</text>
+
+    <rect class="chip" x="55" y="135" width="160" height="26" />
+    <text class="chipText" x="135" y="153" text-anchor="middle">Netlify (Frontend)</text>
+    <rect class="chip" x="235" y="135" width="210" height="26" />
+    <text class="chipText" x="340" y="153" text-anchor="middle">Cloudflare (DNS/Tunnel)</text>
+    <rect class="chip" x="465" y="135" width="180" height="26" />
+    <text class="chipText" x="555" y="153" text-anchor="middle">Backend (Express)</text>
+
+    <!-- Transport mapping -->
+    <rect class="box" x="30" y="175" width="630" height="80" rx="16" />
+    <text class="text" x="345" y="207" text-anchor="middle">TCP</text>
+    <text class="sub" x="345" y="227" text-anchor="middle">Sesiones HTTP/HTTPS via TCP (control de entrega y orden)</text>
+
+    <!-- Internet mapping -->
+    <rect class="box" x="30" y="280" width="630" height="80" rx="16" />
+    <text class="text" x="345" y="312" text-anchor="middle">IP / Enrutamiento</text>
+    <text class="sub" x="345" y="332" text-anchor="middle">LAN ↔ ISP ↔ Internet (ruteo hacia Netlify/Cloudflare)</text>
+
+    <!-- Access mapping -->
+    <rect class="box" x="30" y="385" width="630" height="80" rx="16" />
+    <text class="text" x="345" y="417" text-anchor="middle">Acceso físico / enlace</text>
+    <text class="sub" x="345" y="437" text-anchor="middle">Ethernet/Wi‑Fi en LAN; 4G/Wi‑Fi para acceso remoto</text>
+
+    <!-- Internal links: mapping connections -->
+    <path class="line" marker-end="url(#arrow)" d="M 345 150 L 345 175" />
+    <path class="line" marker-end="url(#arrow)" d="M 345 255 L 345 280" />
+    <path class="line" marker-end="url(#arrow)" d="M 345 360 L 345 385" />
+  </g>
+
+  <!-- Footer -->
+  <text class="footer" x="600" y="685" text-anchor="middle">Figura X – Capas del modelo TCP/IP y su aplicación en la comunicación del sistema (elaboración propia).</text>
+</svg>
+

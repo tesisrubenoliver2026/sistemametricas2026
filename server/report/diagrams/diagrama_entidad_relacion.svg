@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+
+      .tbl { fill: #ffffff; stroke: #0f172a; stroke-width: 2; rx: 14; }
+      .hdr { fill: #111827; stroke: #111827; stroke-width: 2; rx: 14; }
+      .hdrText { font: 800 14px "Segoe UI", Arial, sans-serif; fill: #ffffff; letter-spacing: 0.5px; }
+      .row { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .muted { fill: #475569; font-weight: 600; }
+
+      .line { stroke: #0f172a; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.88; }
+      .card { font: 800 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+
+      .legendTitle { font: 800 13px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .legend { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1800" height="1100" />
+
+  <!-- ===================== LEGEND ===================== -->
+  <g transform="translate(40,30)">
+    <rect class="tbl" x="0" y="0" width="360" height="92" rx="14" />
+    <rect class="hdr" x="0" y="0" width="360" height="30" rx="14" />
+    <text class="hdrText" x="180" y="20" text-anchor="middle">LEYENDA</text>
+    <text class="legend" x="16" y="54">PK: clave primaria · FK: clave foránea</text>
+    <text class="legend" x="16" y="74">Cardinalidad: 1 — N (una a muchas)</text>
+  </g>
+
+  <!-- ===================== TABLES (SPACED) ===================== -->
+
+  <!-- CLIENTES -->
+  <g id="clientes" transform="translate(80,140)">
+    <rect class="tbl" x="0" y="0" width="340" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="340" height="28" rx="14" />
+    <text class="hdrText" x="170" y="19" text-anchor="middle">CLIENTES</text>
+    <text class="row" x="16" y="55">PK  idcliente</text>
+    <text class="row" x="16" y="75">FK  idusuario → usuarios.idusuarios</text>
+    <text class="row muted" x="16" y="97">numDocumento (unique por usuario)</text>
+    <text class="row muted" x="16" y="117">tipo_cliente · estado</text>
+    <text class="row muted" x="16" y="137">created_at / deleted_at</text>
+  </g>
+
+  <!-- USUARIOS -->
+  <g id="usuarios" transform="translate(730,140)">
+    <rect class="tbl" x="0" y="0" width="340" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="340" height="28" rx="14" />
+    <text class="hdrText" x="170" y="19" text-anchor="middle">USUARIOS</text>
+    <text class="row" x="16" y="55">PK  idusuarios</text>
+    <text class="row muted" x="16" y="75">login (unique) · acceso (rol)</text>
+    <text class="row muted" x="16" y="97">nombre · apellido · telefono</text>
+    <text class="row muted" x="16" y="117">estado</text>
+    <text class="row muted" x="16" y="137">created_at / deleted_at</text>
+  </g>
+
+  <!-- PROVEEDOR -->
+  <g id="proveedor" transform="translate(1380,140)">
+    <rect class="tbl" x="0" y="0" width="340" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="340" height="28" rx="14" />
+    <text class="hdrText" x="170" y="19" text-anchor="middle">PROVEEDOR</text>
+    <text class="row" x="16" y="55">PK  idproveedor</text>
+    <text class="row" x="16" y="75">FK  idusuario → usuarios.idusuarios</text>
+    <text class="row muted" x="16" y="97">nombre · ruc · teléfono</text>
+    <text class="row muted" x="16" y="117">estado</text>
+    <text class="row muted" x="16" y="137">created_at / deleted_at</text>
+  </g>
+
+  <!-- FORMAS_PAGO -->
+  <g id="formas_pago" transform="translate(80,340)">
+    <rect class="tbl" x="0" y="0" width="300" height="120" rx="14" />
+    <rect class="hdr" x="0" y="0" width="300" height="28" rx="14" />
+    <text class="hdrText" x="150" y="19" text-anchor="middle">FORMAS_PAGO</text>
+    <text class="row" x="16" y="55">PK  idformapago</text>
+    <text class="row muted" x="16" y="77">descripcion (unique)</text>
+    <text class="row muted" x="16" y="99">deleted_at</text>
+  </g>
+
+  <!-- MOVIMIENTO_CAJA -->
+  <g id="movimiento_caja" transform="translate(700,330)">
+    <rect class="tbl" x="0" y="0" width="400" height="180" rx="14" />
+    <rect class="hdr" x="0" y="0" width="400" height="28" rx="14" />
+    <text class="hdrText" x="200" y="19" text-anchor="middle">MOVIMIENTO_CAJA</text>
+    <text class="row" x="16" y="55">PK  idmovimiento</text>
+    <text class="row muted" x="16" y="77">idusuarios · num_caja</text>
+    <text class="row muted" x="16" y="99">fecha_apertura · fecha_cierre</text>
+    <text class="row muted" x="16" y="121">monto_apertura · monto_cierre</text>
+    <text class="row muted" x="16" y="143">contado · credito · gastos</text>
+    <text class="row muted" x="16" y="165">estado</text>
+  </g>
+
+  <!-- PRODUCTOS -->
+  <g id="productos" transform="translate(1320,330)">
+    <rect class="tbl" x="0" y="0" width="400" height="200" rx="14" />
+    <rect class="hdr" x="0" y="0" width="400" height="28" rx="14" />
+    <text class="hdrText" x="200" y="19" text-anchor="middle">PRODUCTOS</text>
+    <text class="row" x="16" y="55">PK  idproducto</text>
+    <text class="row" x="16" y="75">FK  idusuario → usuarios.idusuarios</text>
+    <text class="row muted" x="16" y="97">nombre_producto · cod_barra</text>
+    <text class="row muted" x="16" y="119">precio_compra · precio_venta</text>
+    <text class="row muted" x="16" y="141">stock · unidad_medida</text>
+    <text class="row muted" x="16" y="163">idcategoria · idproveedor (opcional)</text>
+    <text class="row muted" x="16" y="185">created_at / deleted_at</text>
+  </g>
+
+  <!-- VENTAS -->
+  <g id="ventas" transform="translate(80,560)">
+    <rect class="tbl" x="0" y="0" width="420" height="180" rx="14" />
+    <rect class="hdr" x="0" y="0" width="420" height="28" rx="14" />
+    <text class="hdrText" x="210" y="19" text-anchor="middle">VENTAS</text>
+    <text class="row" x="16" y="55">PK  idventa</text>
+    <text class="row muted" x="16" y="77">idusuarios · idcliente</text>
+    <text class="row muted" x="16" y="99">idformapago · idmovimiento</text>
+    <text class="row muted" x="16" y="121">total · fecha · hora</text>
+    <text class="row muted" x="16" y="143">tipo (contado/crédito) · estado</text>
+    <text class="row muted" x="16" y="165">created_at / deleted_at</text>
+  </g>
+
+  <!-- ARQUEO -->
+  <g id="arqueo" transform="translate(700,560)">
+    <rect class="tbl" x="0" y="0" width="400" height="140" rx="14" />
+    <rect class="hdr" x="0" y="0" width="400" height="28" rx="14" />
+    <text class="hdrText" x="200" y="19" text-anchor="middle">ARQUEO</text>
+    <text class="row" x="16" y="55">PK  idarqueo</text>
+    <text class="row" x="16" y="75">FK  idmovimiento → movimiento_caja.idmovimiento</text>
+    <text class="row muted" x="16" y="97">total · desglose (billetes)</text>
+    <text class="row muted" x="16" y="119">detalle1..5 (opcional)</text>
+  </g>
+
+  <!-- COMPRAS -->
+  <g id="compras" transform="translate(1320,560)">
+    <rect class="tbl" x="0" y="0" width="420" height="170" rx="14" />
+    <rect class="hdr" x="0" y="0" width="420" height="28" rx="14" />
+    <text class="hdrText" x="210" y="19" text-anchor="middle">COMPRAS</text>
+    <text class="row" x="16" y="55">PK  idcompra</text>
+    <text class="row muted" x="16" y="77">idusuarios · idproveedor</text>
+    <text class="row muted" x="16" y="99">idmovimiento</text>
+    <text class="row muted" x="16" y="121">total · fecha</text>
+    <text class="row muted" x="16" y="143">tipo · estado</text>
+    <text class="row muted" x="16" y="165">observación</text>
+  </g>
+
+  <!-- DETALLE_VENTA -->
+  <g id="detalle_venta" transform="translate(80,780)">
+    <rect class="tbl" x="0" y="0" width="420" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="420" height="28" rx="14" />
+    <text class="hdrText" x="210" y="19" text-anchor="middle">DETALLE_VENTA</text>
+    <text class="row" x="16" y="55">PK  iddetalle</text>
+    <text class="row" x="16" y="75">FK  idventa → ventas.idventa</text>
+    <text class="row muted" x="16" y="97">idproducto (FK) · cantidad</text>
+    <text class="row muted" x="16" y="119">precio_venta · sub_total</text>
+    <text class="row muted" x="16" y="141">ganancia · descuento</text>
+  </g>
+
+  <!-- INGRESOS -->
+  <g id="ingresos" transform="translate(560,780)">
+    <rect class="tbl" x="0" y="0" width="320" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="320" height="28" rx="14" />
+    <text class="hdrText" x="160" y="19" text-anchor="middle">INGRESOS</text>
+    <text class="row" x="16" y="55">PK  idingreso</text>
+    <text class="row muted" x="16" y="77">idmovimiento</text>
+    <text class="row muted" x="16" y="99">idventa (opcional)</text>
+    <text class="row muted" x="16" y="121">idformapago (opcional)</text>
+    <text class="row muted" x="16" y="143">monto · fecha</text>
+  </g>
+
+  <!-- EGRESOS -->
+  <g id="egresos" transform="translate(920,780)">
+    <rect class="tbl" x="0" y="0" width="320" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="320" height="28" rx="14" />
+    <text class="hdrText" x="160" y="19" text-anchor="middle">EGRESOS</text>
+    <text class="row" x="16" y="55">PK  idegreso</text>
+    <text class="row muted" x="16" y="77">idmovimiento</text>
+    <text class="row muted" x="16" y="99">idcompra (opcional)</text>
+    <text class="row" x="16" y="121">FK  idformapago → formas_pago.idformapago</text>
+    <text class="row muted" x="16" y="143">monto · fecha</text>
+  </g>
+
+  <!-- DETALLE_COMPRA -->
+  <g id="detalle_compra" transform="translate(1320,780)">
+    <rect class="tbl" x="0" y="0" width="420" height="150" rx="14" />
+    <rect class="hdr" x="0" y="0" width="420" height="28" rx="14" />
+    <text class="hdrText" x="210" y="19" text-anchor="middle">DETALLE_COMPRA</text>
+    <text class="row" x="16" y="55">PK  iddetalle</text>
+    <text class="row" x="16" y="75">FK  idcompra → compras.idcompra</text>
+    <text class="row muted" x="16" y="97">idproducto (FK) · cantidad</text>
+    <text class="row muted" x="16" y="119">idproveedor (FK)</text>
+    <text class="row muted" x="16" y="141">precio · sub_total</text>
+  </g>
+
+  <!-- ===================== RELATIONSHIPS (SIMPLIFIED, ORTHOGONAL) ===================== -->
+
+  <!-- usuarios 1..N clientes -->
+  <path class="line" d="M 730 215 L 420 215" />
+  <text class="card" x="710" y="205">1</text>
+  <text class="card" x="440" y="205">N</text>
+
+  <!-- usuarios 1..N proveedor -->
+  <path class="line" d="M 1070 215 L 1380 215" />
+  <text class="card" x="1090" y="205">1</text>
+  <text class="card" x="1360" y="205">N</text>
+
+  <!-- usuarios 1..N movimiento_caja -->
+  <path class="line" d="M 900 290 L 900 330" />
+  <text class="card" x="910" y="312">1</text>
+  <text class="card" x="910" y="326">N</text>
+
+  <!-- movimiento_caja 1..N arqueo -->
+  <path class="line" d="M 900 510 L 900 560" />
+  <text class="card" x="910" y="532">1</text>
+  <text class="card" x="910" y="555">N</text>
+
+  <!-- clientes 1..N ventas -->
+  <path class="line" d="M 250 290 L 250 560" />
+  <text class="card" x="260" y="312">1</text>
+  <text class="card" x="260" y="552">N</text>
+
+  <!-- proveedor 1..N compras -->
+  <path class="line" d="M 1550 290 L 1550 560" />
+  <text class="card" x="1560" y="312">1</text>
+  <text class="card" x="1560" y="552">N</text>
+
+  <!-- movimiento_caja 1..N ventas -->
+  <path class="line" d="M 700 420 L 560 420 L 560 650 L 500 650" />
+  <text class="card" x="680" y="412">1</text>
+  <text class="card" x="512" y="642">N</text>
+
+  <!-- movimiento_caja 1..N compras -->
+  <path class="line" d="M 1100 420 L 1210 420 L 1210 645 L 1320 645" />
+  <text class="card" x="1110" y="412">1</text>
+  <text class="card" x="1302" y="637">N</text>
+
+  <!-- ventas 1..N detalle_venta -->
+  <path class="line" d="M 290 740 L 290 780" />
+  <text class="card" x="300" y="762">1</text>
+  <text class="card" x="300" y="800">N</text>
+
+  <!-- compras 1..N detalle_compra -->
+  <path class="line" d="M 1530 730 L 1530 780" />
+  <text class="card" x="1540" y="752">1</text>
+  <text class="card" x="1540" y="800">N</text>
+
+  <!-- ventas 1..N ingresos -->
+  <path class="line" d="M 500 650 L 530 650 L 530 855 L 560 855" />
+  <text class="card" x="512" y="642">1</text>
+  <text class="card" x="542" y="847">N</text>
+
+  <!-- compras 1..N egresos -->
+  <path class="line" d="M 1320 645 L 1260 645 L 1260 855 L 1240 855" />
+  <text class="card" x="1302" y="637">1</text>
+  <text class="card" x="1250" y="847">N</text>
+
+  <!-- formas_pago 1..N ventas -->
+  <path class="line" d="M 380 400 L 440 400 L 440 650 L 500 650" />
+  <text class="card" x="392" y="392">1</text>
+  <text class="card" x="512" y="642">N</text>
+
+  <!-- formas_pago 1..N ingresos -->
+  <path class="line" d="M 380 400 L 520 400 L 520 855 L 560 855" />
+  <text class="card" x="392" y="392">1</text>
+  <text class="card" x="542" y="847">N</text>
+
+  <!-- formas_pago 1..N egresos -->
+  <path class="line" d="M 380 400 L 520 400 L 520 855 L 920 855" />
+  <text class="card" x="392" y="392">1</text>
+  <text class="card" x="902" y="847">N</text>
+
+  <!-- Footer -->
+  <text x="900" y="1070" class="legend" text-anchor="middle">Diagrama Entidad–Relación (DER) simplificado del sistema (MySQL) – elaboración propia.</text>
+</svg>
+

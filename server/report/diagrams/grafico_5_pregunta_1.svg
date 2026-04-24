@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 900 18px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #475569; }
+      .note { font: 800 12px "Segoe UI", Arial, sans-serif; fill: #b91c1c; }
+      .axis { stroke: #0f172a; stroke-width: 2; }
+      .grid { stroke: #e2e8f0; stroke-width: 2; }
+      .label { font: 700 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .value { font: 800 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .bar { fill: #0ea5e9; }
+      .bar2 { fill: #22c55e; }
+      .bar3 { fill: #f97316; }
+      .legendBox { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 12; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="620" />
+
+  <!-- Titles -->
+  <text class="title" x="60" y="55">Gráfico 5 – Beneficios esperados al integrar IA (Ollama) para métricas y apoyo a decisiones</text>
+  <text class="sub" x="60" y="78">Pregunta 1 (selección múltiple). N=30. Valores expresados como frecuencia (n) y porcentaje sobre N.</text>
+
+  <!-- Chart area -->
+  <!-- Margins: left 420 (for long labels), right 60, top 140, bottom 70 -->
+  <!-- Plot: x from 420..1140 (width 720), y from 140..540 -->
+  <line class="axis" x1="420" y1="540" x2="1140" y2="540" />
+
+  <!-- Grid & x labels (0..25 step 5) -->
+  <g>
+    <line class="grid" x1="420" y1="160" x2="420" y2="540" />
+    <text class="label" x="420" y="560" text-anchor="middle">0</text>
+
+    <line class="grid" x1="564" y1="160" x2="564" y2="540" />
+    <text class="label" x="564" y="560" text-anchor="middle">5</text>
+
+    <line class="grid" x1="708" y1="160" x2="708" y2="540" />
+    <text class="label" x="708" y="560" text-anchor="middle">10</text>
+
+    <line class="grid" x1="852" y1="160" x2="852" y2="540" />
+    <text class="label" x="852" y="560" text-anchor="middle">15</text>
+
+    <line class="grid" x1="996" y1="160" x2="996" y2="540" />
+    <text class="label" x="996" y="560" text-anchor="middle">20</text>
+
+    <line class="grid" x1="1140" y1="160" x2="1140" y2="540" />
+    <text class="label" x="1140" y="560" text-anchor="middle">25</text>
+  </g>
+
+  <!-- Data (simulated) -->
+  <!-- Scale: 25 max -> 720px, so 1 unit = 28.8px -->
+  <!-- Bars: height 44, gap 16 -->
+
+  <!-- 1) Interpretación lenguaje natural: n=21 (70%) -->
+  <text class="label" x="60" y="190">1) Interpretación de métricas en lenguaje natural</text>
+  <rect class="bar" x="420" y="162" width="605" height="44" />
+  <text class="value" x="1035" y="190">21 (70%)</text>
+
+  <!-- 2) Reducción tiempo análisis: n=18 (60%) -->
+  <text class="label" x="60" y="250">2) Reducción del tiempo de análisis y consultas</text>
+  <rect class="bar2" x="420" y="222" width="518" height="44" />
+  <text class="value" x="950" y="250">18 (60%)</text>
+
+  <!-- 3) Tendencias/variaciones: n=16 (53%) -->
+  <text class="label" x="60" y="304">
+    <tspan x="60" dy="0">3) Identificación de tendencias/variaciones</tspan>
+    <tspan x="60" dy="16">(ventas, compras, inventario)</tspan>
+  </text>
+  <rect class="bar" x="420" y="282" width="461" height="44" />
+  <text class="value" x="893" y="310">16 (53%)</text>
+
+  <!-- 4) Recomendaciones operativas: n=14 (47%) -->
+  <text class="label" x="60" y="364">
+    <tspan x="60" dy="0">4) Recomendaciones para decisiones operativas</tspan>
+    <tspan x="60" dy="16">(stock, caja, ventas)</tspan>
+  </text>
+  <rect class="bar3" x="420" y="342" width="403" height="44" />
+  <text class="value" x="835" y="370">14 (47%)</text>
+
+  <!-- 5) Indicadores más claros: n=12 (40%) -->
+  <text class="label" x="60" y="430">5) Indicadores consolidados más claros (dashboard)</text>
+  <rect class="bar2" x="420" y="402" width="346" height="44" />
+  <text class="value" x="778" y="430">12 (40%)</text>
+
+  <!-- 6) Menos errores interpretación: n=9 (30%) -->
+  <text class="label" x="60" y="490">6) Menos errores de interpretación / mejor comprensión</text>
+  <rect class="bar" x="420" y="462" width="259" height="44" />
+  <text class="value" x="691" y="490">9 (30%)</text>
+
+  <!-- Legend -->
+  <rect class="legendBox" x="60" y="530" width="320" height="58" />
+  <rect class="bar" x="78" y="548" width="16" height="16" />
+  <text class="sub" x="102" y="561">Opción (azul)</text>
+  <rect class="bar2" x="210" y="548" width="16" height="16" />
+  <text class="sub" x="234" y="561">Opción (verde)</text>
+  <rect class="bar3" x="78" y="570" width="16" height="16" />
+  <text class="sub" x="102" y="583">Opción (naranja)</text>
+</svg>

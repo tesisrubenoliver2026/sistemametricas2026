@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="580" viewBox="0 0 1100 580">
+  <defs>
+    <style>
+      .frame { fill: #ffffff; stroke: #111827; stroke-width: 3; }
+      .stroke { stroke: #111827; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .text { fill: #111827; font-family: "Segoe UI", Arial, sans-serif; font-size: 22px; font-weight: 600; }
+      .text-small { fill: #111827; font-family: "Segoe UI", Arial, sans-serif; font-size: 20px; font-weight: 600; }
+      .arrow { stroke: #111827; stroke-width: 3; fill: none; marker-end: url(#arrowHead); }
+    </style>
+    <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#111827"/>
+    </marker>
+  </defs>
+
+  <!-- Border -->
+  <rect class="frame" x="20" y="20" width="1060" height="540" rx="10" ry="10"/>
+
+  <!-- Actor: Usuario -->
+  <circle class="stroke" cx="130" cy="150" r="24"/>
+  <line class="stroke" x1="130" y1="174" x2="130" y2="250"/>
+  <line class="stroke" x1="90" y1="200" x2="170" y2="200"/>
+  <line class="stroke" x1="130" y1="250" x2="100" y2="310"/>
+  <line class="stroke" x1="130" y1="250" x2="160" y2="310"/>
+  <text class="text" x="130" y="360" text-anchor="middle">Usuario</text>
+  <text class="text-small" x="130" y="388" text-anchor="middle">(Web / App)</text>
+
+  <!-- Step 1: Selecciona opción -->
+  <text class="text" x="420" y="120">Selecciona la opción “Registro”.</text>
+  <line class="arrow" x1="190" y1="150" x2="360" y2="125"/>
+
+  <!-- Step 2: Selecciona tipo -->
+  <text class="text" x="420" y="270">Selecciona el tipo a registrar:</text>
+  <line class="arrow" x1="190" y1="210" x2="380" y2="260"/>
+
+  <!-- Branch labels (more spacing) -->
+  <text class="text" x="830" y="235">Clientes</text>
+  <text class="text" x="830" y="330">Proveedores</text>
+  <line class="arrow" x1="710" y1="285" x2="800" y2="245"/>
+  <line class="arrow" x1="710" y1="285" x2="800" y2="335"/>
+
+  <!-- Step 3: Ingresa datos y guarda -->
+  <text class="text" x="420" y="435">Ingresa los datos específicos y guarda.</text>
+  <line class="arrow" x1="190" y1="290" x2="380" y2="425"/>
+</svg>
+

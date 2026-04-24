@@ -1,0 +1,12 @@
+Atributo,Tipo de dato (MySQL),Validación
+id_cliente,"INT (PK, AUTO_INCREMENT)","Único, no nulo"
+"documento (Cédula/RUC)","VARCHAR(20)","Obligatorio, único (según regla), longitud máx. 20"
+nombre_apellidos,"VARCHAR(60)","Obligatorio, longitud máx. 60"
+tipo_cliente,"VARCHAR(20)","Obligatorio, longitud máx. 20 (ej.: “Minorista”, “Mayorista”)"
+nacionalidad,"VARCHAR(20)","Opcional, longitud máx. 20"
+domicilio,"VARCHAR(80)","Opcional, longitud máx. 80"
+email,"VARCHAR(100)","Opcional, formato email, longitud máx. 100"
+telefono,"VARCHAR(20)","Opcional, longitud máx. 20 (permite +, guiones)"
+fecha_registro,"DATETIME","Obligatorio, fecha/hora válida (default CURRENT_TIMESTAMP)"
+observaciones,"VARCHAR(255)","Opcional, longitud máx. 255"
+"id_empresa (si aplica)","INT (FK, nullable)","Referencia a empresas.id_empresa o nulo si es cliente individual"

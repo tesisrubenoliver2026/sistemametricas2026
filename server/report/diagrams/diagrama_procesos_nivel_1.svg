@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .core { fill: #111827; stroke: #111827; stroke-width: 2; rx: 18; }
+      .mod { fill: #f3f4f6; stroke: #111827; stroke-width: 2; rx: 16; }
+      .modA { fill: #ecfeff; stroke: #0ea5e9; stroke-width: 2; rx: 16; }
+      .modB { fill: #f0fdf4; stroke: #22c55e; stroke-width: 2; rx: 16; }
+      .modC { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 16; }
+      .coreText { font: 800 20px "Segoe UI", Arial, sans-serif; fill: #ffffff; }
+      .modTitle { font: 800 16px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .modText { font: 600 14px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .line { stroke: #111827; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.95; }
+      .label { font: 600 13px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .labelBg { fill: #ffffff; stroke: #e5e7eb; stroke-width: 1; rx: 10; opacity: 0.96; }
+      .footer { font: 600 13px "Segoe UI", Arial, sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="720" />
+
+  <!-- Core system -->
+  <rect class="core" x="410" y="280" width="380" height="160" />
+  <text x="600" y="325" class="coreText" text-anchor="middle">
+    <tspan x="600" dy="0">Sistema de Gestión</tspan>
+    <tspan x="600" dy="26">Ventas · Inventario · Caja</tspan>
+  </text>
+  <text x="600" y="395" class="coreText" text-anchor="middle" style="font-size:16px;font-weight:700;">
+    <tspan x="600" dy="0">API REST (Node.js + Express)</tspan>
+    <tspan x="600" dy="22">Autenticación JWT · MySQL</tspan>
+  </text>
+
+  <!-- Modules around -->
+  <!-- Top-left: Usuarios -->
+  <rect class="mod" x="80" y="80" width="300" height="130" />
+  <text x="230" y="115" class="modTitle" text-anchor="middle">Gestión de usuarios y permisos</text>
+  <text x="110" y="145" class="modText">
+    <tspan x="110" dy="0">1. Autenticación (login/logout)</tspan>
+    <tspan x="110" dy="20">2. Asignación de roles</tspan>
+    <tspan x="110" dy="20">3. Alta / baja / edición</tspan>
+  </text>
+
+  <!-- Top-right: Proveedores / Clientes -->
+  <rect class="mod" x="820" y="80" width="300" height="130" />
+  <text x="970" y="115" class="modTitle" text-anchor="middle">Gestión de terceros</text>
+  <text x="850" y="145" class="modText">
+    <tspan x="850" dy="0">1. Registrar / actualizar proveedor</tspan>
+    <tspan x="850" dy="20">2. Registrar / actualizar cliente</tspan>
+    <tspan x="850" dy="20">3. Consultas y listados</tspan>
+  </text>
+
+  <!-- Mid-left: Productos / Inventario -->
+  <rect class="modB" x="60" y="290" width="320" height="150" />
+  <text x="220" y="325" class="modTitle" text-anchor="middle">Catálogo e inventario</text>
+  <text x="95" y="355" class="modText">
+    <tspan x="95" dy="0">1. Productos / categorías</tspan>
+    <tspan x="95" dy="20">2. Stock y lotes (si aplica)</tspan>
+    <tspan x="95" dy="20">3. Consultas de existencias</tspan>
+  </text>
+
+  <!-- Mid-right: Métricas IA -->
+  <rect class="modA" x="820" y="290" width="320" height="150" />
+  <text x="980" y="325" class="modTitle" text-anchor="middle">Métricas asistidas por IA (Ollama)</text>
+  <text x="855" y="355" class="modText">
+    <tspan x="855" dy="0">1. Generar snapshot (SQL agregadas)</tspan>
+    <tspan x="855" dy="20">2. Enviar prompt + contexto</tspan>
+    <tspan x="855" dy="20">3. Interpretación en lenguaje natural</tspan>
+  </text>
+
+  <!-- Bottom-left: Transacciones -->
+  <rect class="modC" x="120" y="520" width="330" height="150" />
+  <text x="285" y="555" class="modTitle" text-anchor="middle">Transacciones</text>
+  <text x="155" y="585" class="modText">
+    <tspan x="155" dy="0">1. Ventas (detalle / pagos)</tspan>
+    <tspan x="155" dy="20">2. Compras (detalle / pagos)</tspan>
+    <tspan x="155" dy="20">3. Caja: ingresos / egresos / arqueo</tspan>
+  </text>
+
+  <!-- Bottom-right: Reportes -->
+  <rect class="mod" x="740" y="520" width="330" height="150" />
+  <text x="905" y="555" class="modTitle" text-anchor="middle">Reportes y comprobantes</text>
+  <text x="775" y="585" class="modText">
+    <tspan x="775" dy="0">1. Selección de parámetros</tspan>
+    <tspan x="775" dy="20">2. Generación de PDF / consultas</tspan>
+    <tspan x="775" dy="20">3. Descarga / impresión</tspan>
+  </text>
+
+  <!-- Connectors (simple lines, no arrows) -->
+  <!-- Usuarios -> Core -->
+  <path class="line" d="M 380 145 L 410 145 L 410 300" />
+  <text x="410" y="135" class="label" text-anchor="start">control de acceso</text>
+
+  <!-- Terceros -> Core -->
+  <path class="line" d="M 820 145 L 790 145 L 790 300" />
+  <text x="790" y="135" class="label" text-anchor="end">datos maestros</text>
+
+  <!-- Inventario -> Core -->
+  <path class="line" d="M 380 365 L 410 365" />
+  <rect class="labelBg" x="185" y="338" width="230" height="24" />
+  <text x="300" y="355" class="label" text-anchor="middle">consultas / actualizaciones</text>
+
+  <!-- Métricas -> Core -->
+  <path class="line" d="M 820 365 L 790 365" />
+  <rect class="labelBg" x="810" y="338" width="170" height="24" />
+  <text x="895" y="355" class="label" text-anchor="middle">snapshot / análisis</text>
+
+  <!-- Transacciones -> Core -->
+  <path class="line" d="M 450 595 L 520 595 L 520 440" />
+  <text x="505" y="585" class="label" text-anchor="middle">registros</text>
+
+  <!-- Reportes -> Core -->
+  <path class="line" d="M 740 595 L 680 595 L 680 440" />
+  <text x="695" y="585" class="label" text-anchor="middle">generación</text>
+
+  <!-- Footer -->
+  <text x="600" y="705" class="footer" text-anchor="middle">Figura X – Diagrama de contexto (nivel 1) por módulos del sistema (elaboración propia).</text>
+</svg>

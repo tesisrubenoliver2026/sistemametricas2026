@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <style>
+      .label { font: 700 18px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .boxText { font: 600 16px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .boxTextLight { font: 600 16px "Segoe UI", Arial, sans-serif; fill: #ffffff; }
+      .note { font: 600 14px "Segoe UI", Arial, sans-serif; fill: #111827; }
+
+      .actor { fill: #ffffff; stroke: #111827; stroke-width: 2; rx: 14; }
+      .service { fill: #ffffff; stroke: #111827; stroke-width: 2; rx: 14; }
+      .system { fill: #16a34a; stroke: #14532d; stroke-width: 2; rx: 18; }
+      .line { stroke: #111827; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Headings (different layout vs. example: top actors, center system, bottom services) -->
+  <text x="70" y="60" class="label">Actores / Clientes</text>
+  <text x="70" y="455" class="label">Servicios externos</text>
+
+  <!-- ===================== TOP: ACTORES ===================== -->
+  <rect class="actor" x="60" y="90" width="250" height="85" />
+  <text x="185" y="130" class="boxText" text-anchor="middle">
+    <tspan x="185" dy="0">Administrador</tspan>
+    <tspan x="185" dy="20">(configuración)</tspan>
+  </text>
+
+  <rect class="actor" x="330" y="90" width="250" height="85" />
+  <text x="455" y="130" class="boxText" text-anchor="middle">
+    <tspan x="455" dy="0">Funcionario</tspan>
+    <tspan x="455" dy="20">(caja/ventas)</tspan>
+  </text>
+
+  <rect class="actor" x="600" y="90" width="250" height="85" />
+  <text x="725" y="130" class="boxText" text-anchor="middle">
+    <tspan x="725" dy="0">Cliente Web</tspan>
+    <tspan x="725" dy="20">(Vite + TSX)</tspan>
+  </text>
+
+  <rect class="actor" x="870" y="90" width="270" height="85" />
+  <text x="1005" y="130" class="boxText" text-anchor="middle">
+    <tspan x="1005" dy="0">Cliente Móvil</tspan>
+    <tspan x="1005" dy="20">(Expo)</tspan>
+  </text>
+
+  <!-- ===================== CENTER: SISTEMA ===================== -->
+  <rect class="system" x="310" y="250" width="580" height="150" />
+  <text x="600" y="295" class="boxTextLight" text-anchor="middle">
+    <tspan x="600" dy="0">Sistema de Gestión de Ventas</tspan>
+    <tspan x="600" dy="24">Inventario y Caja</tspan>
+  </text>
+  <text x="600" y="350" class="boxTextLight" text-anchor="middle">
+    <tspan x="600" dy="0">API REST (Node.js + Express) · JWT</tspan>
+    <tspan x="600" dy="22">Operaciones CRUD · Reportes · Métricas IA</tspan>
+  </text>
+
+  <!-- Lines: actores -> sistema (sin flechas, más simple) -->
+  <path class="line" d="M 185 175 L 185 220 L 430 220 L 430 250" />
+  <text x="270" y="212" class="note" text-anchor="middle">administra</text>
+
+  <path class="line" d="M 455 175 L 455 250" />
+  <text x="455" y="212" class="note" text-anchor="middle">opera</text>
+
+  <path class="line" d="M 725 175 L 725 250" />
+  <text x="725" y="212" class="note" text-anchor="middle">consume API</text>
+
+  <path class="line" d="M 1005 175 L 1005 220 L 770 220 L 770 250" />
+  <text x="930" y="212" class="note" text-anchor="middle">movilidad</text>
+
+  <!-- ===================== BOTTOM: SERVICIOS EXTERNOS ===================== -->
+  <rect class="service" x="85" y="485" width="255" height="90" />
+  <text x="212" y="525" class="boxText" text-anchor="middle">
+    <tspan x="212" dy="0">Base de datos</tspan>
+    <tspan x="212" dy="20">MySQL</tspan>
+  </text>
+
+  <rect class="service" x="370" y="485" width="255" height="90" />
+  <text x="497" y="525" class="boxText" text-anchor="middle">
+    <tspan x="497" dy="0">Ollama</tspan>
+    <tspan x="497" dy="20">(métricas IA)</tspan>
+  </text>
+
+  <rect class="service" x="655" y="485" width="255" height="90" />
+  <text x="782" y="525" class="boxText" text-anchor="middle">
+    <tspan x="782" dy="0">Reportes</tspan>
+    <tspan x="782" dy="20">(PDF)</tspan>
+  </text>
+
+  <rect class="service" x="940" y="485" width="235" height="90" />
+  <text x="1057" y="525" class="boxText" text-anchor="middle">
+    <tspan x="1057" dy="0">Correo</tspan>
+    <tspan x="1057" dy="20">(SMTP)</tspan>
+  </text>
+
+  <!-- Lines: sistema -> servicios (sin flechas) -->
+  <path class="line" d="M 450 400 L 450 440 L 212 440 L 212 485" />
+  <text x="320" y="432" class="note" text-anchor="middle">persistencia</text>
+
+  <path class="line" d="M 560 400 L 560 485" />
+  <text x="560" y="452" class="note" text-anchor="middle">snapshot → interpretación</text>
+
+  <path class="line" d="M 690 400 L 690 440 L 782 440 L 782 485" />
+  <text x="736" y="432" class="note" text-anchor="middle">generación</text>
+
+  <path class="line" d="M 820 400 L 820 440 L 1057 440 L 1057 485" />
+  <text x="940" y="432" class="note" text-anchor="middle">notificaciones</text>
+
+  <!-- Footer -->
+  <text x="600" y="665" class="note" text-anchor="middle">Figura X – Diagrama de contexto. Nivel 0 (elaboración propia).</text>
+</svg>

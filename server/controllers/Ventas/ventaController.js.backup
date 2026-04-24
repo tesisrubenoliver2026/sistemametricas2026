@@ -1,0 +1,789 @@
+// src/controllers/ventaController.js
+import Venta from '../../models/Venta/Ventas.js';
+import DetalleVenta from '../../models/Venta/DetalleVenta.js';
+import DetalleCompra from '../../models/Compra/DetalleCompra.js';
+import Producto from '../../models/Producto/Producto.js';
+import Ingreso from '../../models/Movimiento/Ingreso.js';
+import { createVenta } from './CrearVenta.js';
+import Cliente from '../../models/Cliente.js';
+import { ToWords } from 'to-words';
+import DatosTransferenciaVenta from '../../models/DatosBancarios/DatosTransferenciaVenta.js';
+import DetalleChequeVenta from '../../models/Venta/DetalleChequeVenta.js';
+import DetalleTarjetaVenta from '../../models/Venta/DetalleTarjetaVenta.js';
+import Facturador from '../../models/facturadorModel.js';
+import { generarFacturaEmbebida } from '../../report/reportFactura.js';
+import { generateReportListVenta } from '../../report/reportListVenta.js';
+import { getUserId } from '../../utils/getUserId.js';
+import Funcionario from '../../models/Funcionario.js';
+export { createVenta };
+
+export const getVentasCajero = (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || '';
+
+  const { idusuarios, idfuncionario } = getUserId(req);
+
+  Venta.countFilteredByCajero(search, idusuarios, idfuncionario, (err, total) => {
+    if (err) return res.status(500).json({ error: err });
+
+    Venta.findAllPaginatedFilteredByCajero(limit, offset, search, idusuarios, idfuncionario, (err, ventas) => {
+      if (err) return res.status(500).json({ error: err });
+      
+      const ids = ventas.map((c) => c.idventa);
+      if (ids.length === 0) {
+        return res.json({ data: [], totalItems: 0, totalPages: 0, currentPage: page });
+      }
+      
+      DetalleVenta.findByVentaMultiple(ids, (err, detalles) => {
+        if (err) return res.status(500).json({ error: err });
+        
+        const detallesMap = {};
+        detalles.forEach((detalle) => {
+          if (!detallesMap[detalle.idventa]) {
+            detallesMap[detalle.idventa] = [];
+          }
+          detallesMap[detalle.idventa].push(detalle);
+        });
+        
+        const ventasConDetalles = ventas.map((venta) => ({
+          ...venta,
+          detalles: detallesMap[venta.idventa] || []
+        }));
+        
+        const totalPages = Math.ceil(total / limit);
+        res.json({
+          data: ventasConDetalles,
+          totalItems: total,
+          totalPages,
+          currentPage: page
+        });
+      });
+    });
+  });
+};
+
+export const getVentas = (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || '';
+
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const { tipo } = req.user || {};
+
+  console.log('🔍 Filtrando ventas para:', { tipo, idusuarios, idfuncionario });
+
+  // Si es un funcionario, solo ve sus propios registros
+  if (tipo === 'funcionario') {
+    return Venta.countFilteredByCajero(search, null, idfuncionario, (err, total) => {
+      if (err) return res.status(500).json({ error: err });
+
+      Venta.findAllPaginatedFilteredByCajero(limit, offset, search, null, idfuncionario, (err, ventas) => {
+        if (err) return res.status(500).json({ error: err });
+
+        const ids = ventas.map((c) => c.idventa);
+        if (ids.length === 0) {
+          return res.json({ data: [], totalItems: 0, totalPages: 0, currentPage: page });
+        }
+
+        DetalleVenta.findByVentaMultiple(ids, (err, detalles) => {
+          if (err) return res.status(500).json({ error: err });
+
+          const detallesMap = {};
+          detalles.forEach((detalle) => {
+            if (!detallesMap[detalle.idventa]) {
+              detallesMap[detalle.idventa] = [];
+            }
+            detallesMap[detalle.idventa].push(detalle);
+          });
+
+          const ventasConDetalles = ventas.map((venta) => ({
+            ...venta,
+            detalles: detallesMap[venta.idventa] || []
+          }));
+
+          const totalPages = Math.ceil(total / limit);
+          res.json({
+            data: ventasConDetalles,
+            totalItems: total,
+            totalPages,
+            currentPage: page
+          });
+        });
+      });
+    });
+  }
+
+  // Si es un usuario administrador, buscar sus funcionarios relacionados
+  Funcionario.findByUsuario(idusuarios, (err, funcionarios) => {
+    if (err) return res.status(500).json({ error: err });
+
+    // Extraer los IDs de funcionarios relacionados
+    const funcionariosIds = funcionarios.map(f => f.idfuncionario).join(',');
+
+    console.log('👥 Funcionarios relacionados:', funcionariosIds || 'ninguno');
+
+    return Venta.countFilteredByCajero(search, idusuarios, funcionariosIds, (err, total) => {
+      if (err) return res.status(500).json({ error: err });
+
+      console.log('📊 Total ventas encontradas:', total);
+
+      Venta.findAllPaginatedFilteredByCajero(limit, offset, search, idusuarios, funcionariosIds, (err, ventas) => {
+        if (err) return res.status(500).json({ error: err });
+
+        console.log('📦 Ventas obtenidas:', ventas.length);
+        if (ventas.length > 0) {
+          console.log('📋 IDs de ventas:', ventas.map(v => `${v.idventa} (idfuncionario: ${v.idfuncionario}, idusuarios: ${v.idusuarios})`));
+        }
+
+        const ids = ventas.map((c) => c.idventa);
+        if (ids.length === 0) {
+          return res.json({ data: [], totalItems: 0, totalPages: 0, currentPage: page });
+        }
+
+        DetalleVenta.findByVentaMultiple(ids, (err, detalles) => {
+          if (err) return res.status(500).json({ error: err });
+
+          const detallesMap = {};
+          detalles.forEach((detalle) => {
+            if (!detallesMap[detalle.idventa]) {
+              detallesMap[detalle.idventa] = [];
+            }
+            detallesMap[detalle.idventa].push(detalle);
+          });
+
+          const ventasConDetalles = ventas.map((venta) => ({
+            ...venta,
+            detalles: detallesMap[venta.idventa] || []
+          }));
+
+          const totalPages = Math.ceil(total / limit);
+          res.json({
+            data: ventasConDetalles,
+            totalItems: total,
+            totalPages,
+            currentPage: page
+          });
+        });
+      });
+    });
+  });
+};
+
+export const getGanancias = (req, res) => {
+  const tipo = req.query.tipo || 'dia'; // 'dia', 'mes', 'año'
+  const fecha_inicio = req.query.fecha_inicio;
+  const fecha_fin = req.query.fecha_fin;
+  const limit = parseInt(req.query.limit) || null;
+
+  // Validar tipo
+  if (!['dia', 'mes', 'año'].includes(tipo)) {
+    return res.status(400).json({ error: 'Tipo debe ser: dia, mes o año' });
+  }
+
+  Venta.getGananciasPorPeriodo(tipo, fecha_inicio, fecha_fin, limit, (err, ganancias) => {
+    if (err) return res.status(500).json({ error: err });
+
+    res.json({
+      tipo: tipo,
+      filtros: {
+        fecha_inicio: fecha_inicio || 'Sin filtro',
+        fecha_fin: fecha_fin || 'Sin filtro',
+        limit: limit || 'Sin límite'
+      },
+      data: ganancias
+    });
+  });
+};
+
+export const getVentaById = (req, res) => {
+  const id = req.params.id;
+  Venta.findById(id, (err, venta) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(venta[0]);
+  });
+};
+
+export const deleteVenta = (req, res) => {
+  const id = req.params.id;
+
+  // Buscar los detalles de la venta
+  DetalleVenta.findByVentaId(id, (err, detalles) => {
+    if (err) return res.status(500).json({ error: err });
+    if (!detalles.length) return res.status(404).json({ error: '❌ No se encontraron detalles para esta venta' });
+
+    let actualizados = 0;
+
+    detalles.forEach((detalle) => {
+      // 1. Reintegrar al stock del producto
+      Producto.aumentarStock(detalle.idproducto, detalle.cantidad, (errProd) => {
+        if (errProd) return res.status(500).json({ error: errProd });
+
+        // 2. Reintegrar al lote si tiene iddetalle_compra
+        if (detalle.iddetalle_compra) {
+          DetalleCompra.aumentarStockLote(detalle.iddetalle_compra, detalle.cantidad, (errLote) => {
+            if (errLote) return res.status(500).json({ error: errLote });
+
+            actualizados++;
+            if (actualizados === detalles.length) finalizarAnulacion();
+          });
+        } else {
+          actualizados++;
+          if (actualizados === detalles.length) finalizarAnulacion();
+        }
+      });
+    });
+
+    function finalizarAnulacion() {
+      Venta.ejecutarAnulacionCompleta(id, (errDelete) => {
+        if (errDelete) return res.status(500).json({ error: errDelete });
+
+        Ingreso.softDeleteByVentaId(id, (errIngreso) => {
+          if (errIngreso) {
+            console.error('⚠️ Error al anular ingreso relacionado:', errIngreso);
+          }
+
+          // Ejecutar ambos soft deletes en paralelo y esperar que ambos terminen
+          let errores = [];
+
+          DatosTransferenciaVenta.softDeleteByVenta(id, (errTransferencia) => {
+            if (errTransferencia) {
+              console.error('⚠️ Error al anular datos de transferencia:', errTransferencia);
+              errores.push('transferencia');
+            }
+
+            DetalleChequeVenta.softDeleteByVenta(id, (errCheque) => {
+              if (errCheque) {
+                console.error("⚠️ Error al anular el cheque:", errCheque);
+                errores.push('cheque');
+              }
+
+              DetalleTarjetaVenta.softDeleteByVenta(id, (errTarjeta) => {
+                if (errTarjeta) {
+                  console.error("⚠️ Error al anular datos de tarjeta:", errTarjeta);
+                  errores.push('tarjeta');
+                }
+
+                if (errores.length > 0) {
+                  return res.status(200).json({
+                    message: '✅ Venta anulada y stock restaurado, pero hubo errores al anular registros asociados',
+                    errores
+                  });
+                }
+
+                res.json({ message: '✅ Venta anulada, stock restaurado y registros asociados anulados' });
+              });
+            });
+          });
+        });
+      });
+    }
+  });
+};
+
+export const comprobanteVenta = (req, res) => {
+  const idventa = req.params.id;
+
+  Venta.findById(idventa, (errVenta, ventaResult) => {
+    if (errVenta || !ventaResult.length) {
+      return res.status(404).json({ error: '❌ Venta no encontrada' });
+    }
+
+    const venta = ventaResult[0];
+
+    Cliente.findById(venta.idcliente, (errCliente, clienteResult) => {
+      if (errCliente || !clienteResult?.length) {
+        return res.status(404).json({ error: '❌ Cliente no encontrado' });
+      }
+
+      const cliente = clienteResult[0];
+
+      Facturador.findById(venta.idfacturador, (errFact, factResult) => {
+        if (errFact || !factResult?.length) {
+          return res.status(404).json({ error: '❌ Facturador no encontrado' });
+        }
+
+        const facturador = factResult[0];
+
+        DetalleVenta.findByVentaId(idventa, (errDetalles, detallesVenta) => {
+          if (errDetalles) {
+            return res.status(500).json({ error: '❌ Error al obtener detalles de venta' });
+          }
+
+          Venta.getTotalesIVA(idventa, async (errIVA, totalesIVA) => {
+            if (errIVA) {
+              return res.status(500).json({ error: '❌ Error al obtener totales de IVA' });
+            }
+
+            const toWords = new ToWords({
+              localeCode: 'es-ES',
+              converterOptions: {
+                currency: true,
+                ignoreDecimal: false,
+                ignoreZeroCurrency: false,
+                doNotAddOnly: false,
+                currencyOptions: {
+                  name: 'guaraní',
+                  plural: 'guaraníes',
+                  symbol: '₲',
+                  fractionalUnit: {
+                    name: 'céntimo',
+                    plural: 'céntimos',
+                    symbol: '',
+                  },
+                },
+              },
+            });
+
+            const formatDate = (date) => {
+              const d = new Date(date);
+              const day = String(d.getDate()).padStart(2, '0');
+              const month = String(d.getMonth() + 1).padStart(2, '0');
+              const year = d.getFullYear();
+              return `${day}-${month}-${year}`;
+            };
+
+            const datosFactura = {
+              nombre_fantasia: facturador.nombre_fantasia,
+              ruc: facturador.ruc,
+              timbrado_nro: facturador.timbrado_nro,
+              fecha_inicio_vigente: formatDate(facturador.fecha_inicio_vigente),
+              fecha_fin_vigente: formatDate(facturador.fecha_fin_vigente),
+              nro_factura: venta.nro_factura,
+              nro_ticket: venta.nro_ticket,
+              fecha: formatDate(venta.fecha),
+              cliente: `${cliente.nombre} ${cliente.apellido}`,
+              nro_documento: cliente.numDocumento,
+              total: venta.total,
+              totalletras: toWords.convert(venta.total || 0),
+              subtotal_exento: venta.subtotal_exento || 0,
+              subtotal_iva5: totalesIVA.iva5 || 0,
+              subtotal_iva10: totalesIVA.iva10 || 0,
+              total_iva: totalesIVA.totaliva || 0,
+              total_descuento: venta.total_descuento || 0,
+              total_original: venta.total,
+              logo_base64: venta.logo_base64 || '',
+              detalles: detallesVenta.map((item) => ({
+                nombre_producto: item.nombre_producto,
+                cantidad: item.cantidad,
+                precio_venta: item.precio_venta,
+                sub_total: item.sub_total,
+                iva5: item.iva5 || 0,
+                iva10: item.iva10 || 0,
+              })),
+            };
+
+            const facturaPDFBase64 = await generarFacturaEmbebida(datosFactura);
+
+            res.json({
+              message: '✅ Comprobante generado correctamente',
+              facturaPDFBase64,
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
+export const getVentasPorMes = (req, res) => {
+  const year = parseInt(req.query.year) || new Date().getFullYear();
+
+  Venta.getVentasPorMes(year, (err, results) => {
+    if (err) {
+      console.error("❌ Error al obtener ventas por mes:", err);
+      return res.status(500).json({ error: "Error al obtener ventas por mes" });
+    }
+
+    const ventasMensuales = Array(12).fill(0);
+
+    results.forEach((row) => {
+      ventasMensuales[row.mes - 1] = parseFloat(row.total);
+    });
+
+    res.json({
+      year,
+      data: ventasMensuales, 
+    });
+  });
+};
+
+export const getProgresoMetaMensual = (req, res) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+
+  Venta.getProgresoMetaMensual(year, month, (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+
+    const { hoy = 0, acumulado = 0 } = result[0];
+    const porcentaje = (acumulado / metaMensual) * 100;
+
+    res.json({
+      hoy,
+      acumulado,
+      meta: metaMensual,
+      porcentaje: parseFloat(porcentaje.toFixed(2)),
+    });
+  });
+};
+
+export const getProductosMasVendidos = (req, res) => {
+  const limit = parseInt(req.query.limit) || 5;
+
+  DetalleVenta.getProductosMasVendidos(limit, (err, results) => {
+    if (err) {
+      console.error("❌ Error al obtener productos más vendidos:", err);
+      return res.status(500).json({ error: "Error al obtener productos más vendidos" });
+    }
+
+    res.json(results);
+  });
+};
+
+export const getEstadisticasVentas = (req, res) => {
+  const year = parseInt(req.query.year) || new Date().getFullYear();
+
+  Venta.getEstadisticasAnuales(year, (err, results) => {
+    if (err) {
+      console.error("❌ Error al obtener estadísticas:", err);
+      return res.status(500).json({ error: "Error al obtener estadísticas de ventas" });
+    }
+
+    const ventas = Array(12).fill(0);
+    const ganancias = Array(12).fill(0);
+
+    results.forEach((row) => {
+      ventas[row.mes - 1] = parseFloat(row.total_ventas);
+      ganancias[row.mes - 1] = parseFloat(row.total_ganancias);
+    });
+
+    res.json({ ventas, ganancias });
+  });
+};
+
+export const getResumenVentasDia = (req, res) => {
+  Venta.getResumenVentasDelDia((err, result) => {
+    if (err) {
+      console.error("❌ Error en resumen de ventas:", err);
+      return res.status(500).json({ error: "Error al obtener resumen de ventas" });
+    }
+
+    const { totalHoy = 0, totalAyer = 0 } = result[0];
+    const variacion = totalAyer === 0 ? 100 : ((totalHoy - totalAyer) / totalAyer) * 100;
+
+    res.json({
+      label: "Ventas del día",
+      totalHoy: parseFloat(totalHoy),
+      totalAyer: parseFloat(totalAyer),
+      variacion: parseFloat(variacion.toFixed(2))
+    });
+  });
+};
+
+// ✅ Obtener datos para el reporte de ventas (sin generar PDF)
+export const getReporteVentasData = (req, res) => {
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const userId = idfuncionario || idusuarios;
+  const search = req.query.search || '';
+  const fechaInicio = req.query.fecha_inicio || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+  const fechaFin = req.query.fecha_fin || new Date().toISOString().split('T')[0];
+  const tipoFiltro = req.query.tipo || ''; // 'contado', 'credito' o '' (todos)
+
+  // Validar usuario autenticado
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuario no autenticado'
+    });
+  }
+
+  // Obtener ventas del usuario con estadísticas
+  Venta.findAllForReportWithStats(userId, search, fechaInicio, fechaFin, (err, ventas) => {
+    if (err) {
+      console.error('❌ Error al obtener ventas:', err);
+      return res.status(500).json({
+        error: 'Error interno al obtener ventas'
+      });
+    }
+
+    if (!ventas.length) {
+      return res.status(404).json({
+        error: '⚠️ No se encontraron ventas para generar el reporte'
+      });
+    }
+
+    // Filtrar por tipo si se especificó (ignorar 'todos' o vacío)
+    let ventasFiltradas = ventas;
+    if (tipoFiltro && tipoFiltro.trim() !== '' && tipoFiltro.toLowerCase() !== 'todos') {
+      ventasFiltradas = ventas.filter(venta =>
+        venta.tipo.toLowerCase() === tipoFiltro.toLowerCase()
+      );
+
+      if (!ventasFiltradas.length) {
+        return res.status(404).json({
+          error: `⚠️ No se encontraron ventas del tipo "${tipoFiltro}"`
+        });
+      }
+    }
+
+    // Función helper para formatear fechas
+    const formatDate = (date) => {
+      if (!date) return '';
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
+    // Función helper para formatear números con puntos de miles
+    const formatNumber = (num) => {
+      if (!num && num !== 0) return '0';
+      return new Intl.NumberFormat('es-PY').format(Math.round(num));
+    };
+
+    // Calcular estadísticas generales
+    let totalVentas = ventasFiltradas.length;
+    let ventasContado = 0;
+    let ventasCredito = 0;
+    let montoTotalVentas = 0;
+    let montoTotalDescuentos = 0;
+    let gananciaTotal = 0;
+    let cantidadTotalProductos = 0;
+
+    ventasFiltradas.forEach((venta) => {
+      // Contar por tipo
+      if (venta.tipo === 'contado') {
+        ventasContado++;
+      } else {
+        ventasCredito++;
+      }
+
+      // Sumar montos
+      montoTotalVentas += parseFloat(venta.total) || 0;
+      montoTotalDescuentos += parseFloat(venta.descuento_aplicado) || 0;
+      gananciaTotal += parseFloat(venta.ganancia_total) || 0;
+      cantidadTotalProductos += parseInt(venta.cantidad_total_productos) || 0;
+    });
+
+    // Formatear ventas con todos los datos necesarios
+    const ventasFormateadas = ventasFiltradas.map((venta) => {
+      return {
+        idventa: venta.idventa,
+        nro_factura: venta.nro_factura || 'Sin factura',
+        fecha: formatDate(venta.fecha),
+        cliente_nombre: venta.cliente_nombre || 'Cliente General',
+        cliente_documento: venta.cliente_documento || 'Sin documento',
+        cajero_nombre: venta.cajero_nombre || 'Sistema',
+        tipo: venta.tipo.charAt(0).toUpperCase() + venta.tipo.slice(1),
+        estado: venta.estado,
+        estado_pago: venta.estado_pago || 'N/A',
+        total: formatNumber(parseFloat(venta.total) || 0),
+        total_raw: parseFloat(venta.total) || 0,
+        descuento_aplicado: formatNumber(parseFloat(venta.descuento_aplicado) || 0),
+        descuento_raw: parseFloat(venta.descuento_aplicado) || 0,
+        ganancia_total: formatNumber(parseFloat(venta.ganancia_total) || 0),
+        ganancia_raw: parseFloat(venta.ganancia_total) || 0,
+        total_productos: parseInt(venta.total_productos) || 0,
+        cantidad_total_productos: parseInt(venta.cantidad_total_productos) || 0,
+        created_at: formatDate(venta.created_at)
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: ventasFormateadas,
+      filtros: {
+        fecha_inicio: fechaInicio,
+        fecha_fin: fechaFin,
+        tipo: tipoFiltro || 'Todos'
+      },
+      estadisticas: {
+        total_ventas: totalVentas,
+        ventas_contado: ventasContado,
+        ventas_credito: ventasCredito,
+        monto_total_ventas: formatNumber(montoTotalVentas),
+        monto_total_ventas_raw: montoTotalVentas,
+        monto_total_descuentos: formatNumber(montoTotalDescuentos),
+        monto_total_descuentos_raw: montoTotalDescuentos,
+        ganancia_total: formatNumber(gananciaTotal),
+        ganancia_total_raw: gananciaTotal,
+        cantidad_total_productos: cantidadTotalProductos
+      }
+    });
+  });
+};
+
+// ✅ Generar PDF del reporte de ventas
+export const generateReporteVentasPDF = (req, res) => {
+  const { idusuarios, idfuncionario } = getUserId(req);
+  const userId = idfuncionario || idusuarios;
+  const search = req.query.search || '';
+  const fechaInicio = req.query.fecha_inicio || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+  const fechaFin = req.query.fecha_fin || new Date().toISOString().split('T')[0];
+  const tipoFiltro = req.query.tipo || ''; // 'contado', 'credito' o '' (todos)
+
+  // Validar usuario autenticado
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuario no autenticado'
+    });
+  }
+
+  // Obtener ventas del usuario con estadísticas
+  Venta.findAllForReportWithStats(userId, search, fechaInicio, fechaFin, (err, ventas) => {
+    if (err) {
+      console.error('❌ Error al obtener ventas:', err);
+      return res.status(500).json({
+        error: 'Error interno al obtener ventas'
+      });
+    }
+
+    if (!ventas.length) {
+      return res.status(404).json({
+        error: '⚠️ No se encontraron ventas para generar el reporte'
+      });
+    }
+
+    // Filtrar por tipo si se especificó (ignorar 'todos' o vacío)
+    let ventasFiltradas = ventas;
+    if (tipoFiltro && tipoFiltro.trim() !== '' && tipoFiltro.toLowerCase() !== 'todos') {
+      ventasFiltradas = ventas.filter(venta =>
+        venta.tipo.toLowerCase() === tipoFiltro.toLowerCase()
+      );
+
+      if (!ventasFiltradas.length) {
+        return res.status(404).json({
+          error: `⚠️ No se encontraron ventas del tipo "${tipoFiltro}"`
+        });
+      }
+    }
+
+    // Obtener datos del facturador activo
+    Facturador.findActivo((errFact, facturadores) => {
+      if (errFact || !facturadores.length) {
+        console.error('❌ Error al obtener facturador:', errFact);
+        return res.status(500).json({
+          error: 'Error al obtener información del facturador'
+        });
+      }
+
+      const facturador = facturadores[0];
+
+      // Función helper para formatear fechas
+      const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+
+      // Función helper para formatear números con puntos de miles
+      const formatNumber = (num) => {
+        if (!num && num !== 0) return '0';
+        return new Intl.NumberFormat('es-PY').format(Math.round(num));
+      };
+
+      // Calcular estadísticas generales
+      let totalVentas = ventasFiltradas.length;
+      let ventasContado = 0;
+      let ventasCredito = 0;
+      let montoTotalVentas = 0;
+      let montoTotalDescuentos = 0;
+      let gananciaTotal = 0;
+      let cantidadTotalProductos = 0;
+
+      ventasFiltradas.forEach((venta) => {
+        // Contar por tipo
+        if (venta.tipo === 'contado') {
+          ventasContado++;
+        } else {
+          ventasCredito++;
+        }
+
+        // Sumar montos
+        montoTotalVentas += parseFloat(venta.total) || 0;
+        montoTotalDescuentos += parseFloat(venta.descuento_aplicado) || 0;
+        gananciaTotal += parseFloat(venta.ganancia_total) || 0;
+        cantidadTotalProductos += parseInt(venta.cantidad_total_productos) || 0;
+      });
+
+      // Formatear ventas con todos los datos necesarios
+      const ventasFormateadas = ventasFiltradas.map((venta) => {
+        return {
+          idventa: venta.idventa,
+          nro_factura: venta.nro_factura || 'Sin factura',
+          fecha: formatDate(venta.fecha),
+          cliente_nombre: venta.cliente_nombre || 'Cliente General',
+          cliente_documento: venta.cliente_documento || 'Sin documento',
+          cajero_nombre: venta.cajero_nombre || 'Sistema',
+          tipo: venta.tipo.charAt(0).toUpperCase() + venta.tipo.slice(1),
+          estado: venta.estado,
+          estado_pago: venta.estado_pago || 'N/A',
+          total: formatNumber(parseFloat(venta.total) || 0),
+          descuento_aplicado: formatNumber(parseFloat(venta.descuento_aplicado) || 0),
+          ganancia_total: formatNumber(parseFloat(venta.ganancia_total) || 0),
+          total_productos: parseInt(venta.total_productos) || 0,
+          cantidad_total_productos: parseInt(venta.cantidad_total_productos) || 0
+        };
+      });
+
+      // Preparar datos para el reporte
+      const dataReport = {
+        empresa: {
+          nombre_fantasia: facturador.nombre_fantasia,
+          ruc: facturador.ruc,
+          timbrado_nro: facturador.timbrado_nro,
+          fecha_inicio_vigente: formatDate(facturador.fecha_inicio_vigente),
+          fecha_fin_vigente: formatDate(facturador.fecha_fin_vigente),
+          fecha_emision: formatDate(new Date())
+        },
+        reporte: {
+          titulo: 'Reporte de Ventas',
+          fecha_inicio: formatDate(fechaInicio),
+          fecha_fin: formatDate(fechaFin),
+          total_ventas: totalVentas,
+          ventas_contado: ventasContado,
+          ventas_credito: ventasCredito,
+          monto_total_ventas: formatNumber(montoTotalVentas),
+          monto_total_descuentos: formatNumber(montoTotalDescuentos),
+          ganancia_total: formatNumber(gananciaTotal),
+          cantidad_total_productos: cantidadTotalProductos,
+          ventas: ventasFormateadas
+        }
+      };
+
+      // Generar PDF
+      generateReportListVenta(dataReport)
+        .then((pdfBase64) => {
+          if (!pdfBase64) {
+            return res.status(500).json({
+              error: 'Error al generar el PDF del reporte'
+            });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: '✅ Reporte de ventas generado exitosamente',
+            pdf: pdfBase64,
+            metadata: {
+              total_ventas: totalVentas,
+              monto_total: formatNumber(montoTotalVentas),
+              ganancia_total: formatNumber(gananciaTotal),
+              fecha_generacion: formatDate(new Date())
+            }
+          });
+        })
+        .catch((errPDF) => {
+          console.error('❌ Error al generar PDF:', errPDF);
+          res.status(500).json({
+            error: 'Error al generar el PDF del reporte'
+          });
+        });
+    });
+  });
+};

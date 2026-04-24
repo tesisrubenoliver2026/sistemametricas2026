@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1000" viewBox="0 0 900 1000">
+  <defs>
+    <style>
+      .label { font: 600 18px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .boxText { font: 500 16px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .smallText { font: 500 14px "Segoe UI", Arial, sans-serif; fill: #111827; }
+      .box { fill: #ffffff; stroke: #111827; stroke-width: 2; rx: 10; }
+      .line { stroke: #111827; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Headings -->
+  <text x="60" y="70" class="label">Efectos</text>
+  <text x="450" y="520" class="label" text-anchor="middle">Problema central</text>
+  <text x="60" y="780" class="label">Causas</text>
+
+  <!-- ======= EFECTOS (Top) ======= -->
+
+  <!-- Left column -->
+  <rect class="box" x="90" y="90" width="320" height="70" />
+  <text x="250" y="122" class="boxText" text-anchor="middle">
+    <tspan x="250" dy="0">A nivel operativo</tspan>
+  </text>
+
+  <rect class="box" x="90" y="190" width="320" height="90" />
+  <text x="250" y="225" class="boxText" text-anchor="middle">
+    <tspan x="250" dy="0">Demoras en el registro</tspan>
+    <tspan x="250" dy="20">de ventas y compras</tspan>
+  </text>
+
+  <rect class="box" x="90" y="310" width="320" height="90" />
+  <text x="250" y="345" class="boxText" text-anchor="middle">
+    <tspan x="250" dy="0">Errores y duplicidad</tspan>
+    <tspan x="250" dy="20">en los datos operativos</tspan>
+  </text>
+
+  <!-- Right column -->
+  <rect class="box" x="490" y="90" width="320" height="70" />
+  <text x="650" y="122" class="boxText" text-anchor="middle">
+    <tspan x="650" dy="0">A nivel gerencial</tspan>
+  </text>
+
+  <rect class="box" x="490" y="190" width="320" height="90" />
+  <text x="650" y="225" class="boxText" text-anchor="middle">
+    <tspan x="650" dy="0">Decisiones tardías por</tspan>
+    <tspan x="650" dy="20">información incompleta</tspan>
+  </text>
+
+  <rect class="box" x="490" y="310" width="320" height="90" />
+  <text x="650" y="345" class="boxText" text-anchor="middle">
+    <tspan x="650" dy="0">Riesgo financiero y</tspan>
+    <tspan x="650" dy="20">pérdida de oportunidades</tspan>
+  </text>
+
+  <!-- Arrows in left column -->
+  <path class="line" d="M 250 160 L 250 190" />
+  <path class="line" d="M 250 280 L 250 310" />
+
+  <!-- Arrows in right column -->
+  <path class="line" d="M 650 160 L 650 190" />
+  <path class="line" d="M 650 280 L 650 310" />
+
+  <!-- Connector from effects to central problem -->
+  <path class="line" d="M 250 420 L 650 420" />
+  <path class="line" d="M 450 420 L 450 500" />
+
+  <!-- ======= PROBLEMA CENTRAL (Middle) ======= -->
+  <rect class="box" x="250" y="540" width="400" height="90" />
+  <text x="450" y="575" class="boxText" text-anchor="middle">
+    <tspan x="450" dy="0">Dificultad para controlar</tspan>
+    <tspan x="450" dy="20">ventas, inventario y caja</tspan>
+    <tspan x="450" dy="20">en tiempo oportuno</tspan>
+  </text>
+
+  <!-- Arrow from central to causes -->
+  <path class="line" d="M 450 630 L 450 700" />
+  <path class="line" d="M 220 700 L 680 700" />
+
+  <!-- ======= CAUSAS (Bottom) ======= -->
+  <rect class="box" x="90" y="740" width="240" height="90" />
+  <text x="210" y="775" class="smallText" text-anchor="middle">
+    <tspan x="210" dy="0">Registro manual de</tspan>
+    <tspan x="210" dy="18">operaciones</tspan>
+  </text>
+  <path class="line" d="M 210 700 L 210 740" />
+
+  <rect class="box" x="330" y="740" width="240" height="90" />
+  <text x="450" y="775" class="smallText" text-anchor="middle">
+    <tspan x="450" dy="0">Información dispersa</tspan>
+    <tspan x="450" dy="18">y sin trazabilidad</tspan>
+  </text>
+  <path class="line" d="M 450 700 L 450 740" />
+
+  <rect class="box" x="570" y="740" width="240" height="90" />
+  <text x="690" y="775" class="smallText" text-anchor="middle">
+    <tspan x="690" dy="0">Falta de métricas y</tspan>
+    <tspan x="690" dy="18">reportes consolidados</tspan>
+  </text>
+  <path class="line" d="M 690 700 L 690 740" />
+
+  <!-- Footer note (optional small) -->
+  <text x="450" y="940" class="smallText" text-anchor="middle" fill="#6b7280">
+    <tspan>Árbol de problemas (elaboración propia).</tspan>
+  </text>
+</svg>

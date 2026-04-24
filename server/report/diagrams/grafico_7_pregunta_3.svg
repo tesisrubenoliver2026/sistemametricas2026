@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 900 18px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 600 12px "Segoe UI", Arial, sans-serif; fill: #475569; }
+      .legend { font: 700 12px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .pct { font: 900 14px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .slice1 { fill: #3b82f6; }  /* Sí */
+      .slice2 { fill: #f97316; }  /* No */
+      .slice3 { fill: #9ca3af; }  /* Sí, parcialmente */
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 14; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="620" />
+
+  <text class="title" x="60" y="55">Gráfico 7 – ¿Considera necesario digitalizar los procesos manuales actuales?</text>
+  <text class="sub" x="60" y="78">Pregunta 3 (respuesta única). N=30.</text>
+
+  <!-- Pie chart -->
+  <!-- Center (360,340), radius 190. -->
+  <!-- Slice 1: 60% (18) from -90° to 126° -->
+  <path class="slice1" d="M 360 340 L 360 150 A 190 190 0 1 1 206 451 Z" />
+  <!-- Slice 2: 10% (3) from 126° to 162° -->
+  <path class="slice2" d="M 360 340 L 206 451 A 190 190 0 0 1 179 399 Z" />
+  <!-- Slice 3: 30% (9) from 162° to 270° -->
+  <path class="slice3" d="M 360 340 L 179 399 A 190 190 0 0 1 360 150 Z" />
+
+  <!-- Percent labels -->
+  <text class="pct" x="470" y="380" text-anchor="middle">60%</text>
+  <text class="pct" x="210" y="420" text-anchor="middle">10%</text>
+  <text class="pct" x="280" y="250" text-anchor="middle">30%</text>
+
+  <!-- Legend -->
+  <rect class="box" x="650" y="195" width="470" height="150" />
+
+  <rect class="slice1" x="675" y="225" width="18" height="18" rx="4" />
+  <text class="legend" x="705" y="239">Sí – 18</text>
+
+  <rect class="slice2" x="675" y="265" width="18" height="18" rx="4" />
+  <text class="legend" x="705" y="279">No – 3</text>
+
+  <rect class="slice3" x="675" y="305" width="18" height="18" rx="4" />
+  <text class="legend" x="705" y="319">Sí, parcialmente – 9</text>
+</svg>
+
